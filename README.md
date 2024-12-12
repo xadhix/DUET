@@ -36,7 +36,7 @@ You can obtained the well pre-processed datasets from [Google Drive](https://dri
 
 ### Train and evaluate model
 
-- To see the model structure of DUET,  [click here](./ts_benchmark/baselines/self_implementation/DUET/DUET.py).
+- To see the model structure of DUET,  [click here](./ts_benchmark/baselines/duet/models/duet_model.py).
 - We provide all the experiment scripts for DUET and other baselines under the folder `./scripts/multivariate_forecast`.  For example you can reproduce all the experiment results as the following script:
 
 ```shell
