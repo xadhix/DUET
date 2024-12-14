@@ -4,7 +4,7 @@
 
 **This code is a PyTorch implementation of DUET.**
 
-🚩 News (2024.12) DUET has been included in time series forecasting benchmark [TFB](https://github.com/decisionintelligence/TFB) and the time series analytics leaderboard [OpenTS](https://decisionintelligence.github.io/OpenTS/).
+🚩 News (2024.12) DUET has been included in the time series forecasting benchmark [TFB](https://github.com/decisionintelligence/TFB) and the time series analytics leaderboard [OpenTS](https://decisionintelligence.github.io/OpenTS/).
 
 
 ## Introduction
