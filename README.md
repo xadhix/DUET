@@ -59,6 +59,18 @@ Extensive experiments on  25 real-world datasets from 10 different application d
 <img alt="Logo" src="figures/full_results.png" width="100%"/>
 </div>
 
+## Citation
+
+If you find this repo useful, please cite our paper.
+
+```
+@article{qiu2024duet,
+  title   = {DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting}, 
+  author  = {Xiangfei Qiu and Xingjian Wu and Yan Lin and Chenjuan Guo and Jilin Hu and Bin Yang},
+  journal = {arXiv preprint arXiv:2412.10859},
+  year    = {2024}
+}
+```
 
 ## Contact
 
