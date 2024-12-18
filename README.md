@@ -47,6 +47,7 @@ sh ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
 
 
 ## Results
+We utilize the Time Series Forecasting Benchmark ([TFB](https://github.com/decisionintelligence/TFB)) code repository as a unified evaluation framework, providing access to all baseline codes, scripts, and results. Following the settings in TFB, we do not apply the "Drop Last" trick to ensure a fair comparison.
 
 Extensive experiments on  25 real-world datasets from 10 different application domains, demonstrate that DUET achieves state-of-the-art~(SOTA) performance. We show the main results of the 10 commonly-used datasets below, click [here](./figures/other_results.jpg) to see the results for the remaining 15 datasets:
 
