@@ -64,21 +64,21 @@ Extensive experiments on  25 real-world datasets from 10 different application d
 If you find this repo useful, please cite our paper.
 
 ```
- @inproceedings{qiu2025duet,
-   title     = {DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting},
-   author    = {Xiangfei Qiu and Xingjian Wu and Yan Lin and Chenjuan Guo and Jilin Hu and Bin Yang},
-   booktitle = {SIGKDD},
-   year      = {2025}
- }
+@inproceedings{qiu2025duet,
+ title     = {DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting},
+ author    = {Xiangfei Qiu and Xingjian Wu and Yan Lin and Chenjuan Guo and Jilin Hu and Bin Yang},
+ booktitle = {SIGKDD},
+ year      = {2025}
+}
 
 @article{qiu2024tfb,
-  title   = {TFB: Towards Comprehensive and Fair Benchmarking of Time Series Forecasting Methods},
-  author  = {Xiangfei Qiu and Jilin Hu and Lekui Zhou and Xingjian Wu and Junyang Du and Buang Zhang and Chenjuan Guo and Aoying Zhou and Christian S. Jensen and Zhenli Sheng and Bin Yang},
-  journal = {Proc. {VLDB} Endow.},
-  volume  = {17},
-  number  = {9},
-  pages   = {2363--2377},
-  year    = {2024}
+ title   = {TFB: Towards Comprehensive and Fair Benchmarking of Time Series Forecasting Methods},
+ author  = {Xiangfei Qiu and Jilin Hu and Lekui Zhou and Xingjian Wu and Junyang Du and Buang Zhang and Chenjuan Guo and Aoying Zhou and Christian S. Jensen and Zhenli Sheng and Bin Yang},
+ journal = {Proc. {VLDB} Endow.},
+ volume  = {17},
+ number  = {9},
+ pages   = {2363--2377},
+ year    = {2024}
 }
 ```
 
