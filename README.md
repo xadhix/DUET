@@ -25,7 +25,7 @@ The important components of DUET: (a) Distribution Router; (b) Linear Pattern Ex
 
 ## Quickstart
 
-### Requirements
+1. Requirements
 
 Given a python environment (**note**: this project is fully tested under python 3.8), install the dependencies with the following command:
 
@@ -33,11 +33,11 @@ Given a python environment (**note**: this project is fully tested under python 
 pip install -r requirements.txt
 ```
 
-### Data preparation
+2. Data preparation
 
 You can obtained the well pre-processed datasets from [Google Drive](https://drive.google.com/file/d/1vgpOmAygokoUt235piWKUjfwao6KwLv7/view?usp=drive_link). Then place the downloaded data under the folder `./dataset`. 
 
-### Train and evaluate model
+3. Train and evaluate model
 
 - To see the model structure of DUET,  [click here](./ts_benchmark/baselines/duet/models/duet_model.py).
 - We provide all the experiment scripts for DUET and other baselines under the folder `./scripts/multivariate_forecast`.  For example you can reproduce all the experiment results as the following script:
