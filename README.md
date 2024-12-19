@@ -4,15 +4,6 @@
 
 [![KDD](https://img.shields.io/badge/KDD'25-DUET-orange)](https://arxiv.org/pdf/2412.10859)  [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  ![Stars](https://img.shields.io/github/stars/decisionintelligence/DUET)  [![Visits Badge](https://badges.pufler.dev/visits/decisionintelligence/DUET)](https://badges.pufler.dev/visits/decisionintelligence/DUET)
 
-<div align="center">
-  [![KDD](https://img.shields.io/badge/KDD'25-DUET-orange)](https://arxiv.org/pdf/2412.10859)  
-  [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  
-  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  
-  ![Stars](https://img.shields.io/github/stars/decisionintelligence/DUET)  
-  [![Visits Badge](https://badges.pufler.dev/visits/decisionintelligence/DUET)](https://badges.pufler.dev/visits/decisionintelligence/DUET)
-</div>
-
-
 This code is the official PyTorch implementation of our KDD'25 paper: [DUET](https://arxiv.org/pdf/2412.10859): Dual Clustering Enhanced Multivariate Time Series Forecasting.
 
 If you find this project helpful, please don't forget to give it a ⭐ Star to show your support. Thank you!
