@@ -2,7 +2,8 @@
 
 # <img src="figures/duet.png" alt="Image description" style="width:40px;height:30px;"> DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting
 
-**This code is the official PyTorch implementation of our KDD'25 paper "[DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting](https://arxiv.org/pdf/2412.10859)".**
+This code is the official PyTorch implementation of our KDD'25 paper "[DUET](https://arxiv.org/pdf/2412.10859): Dual Clustering Enhanced Multivariate Time Series Forecasting".
+If you find this project helpful, please don't forget to give it a ⭐ Star to show your support. Thank you!
 
 🚩 News (2024.12) DUET has been included in the time series forecasting benchmark [TFB](https://github.com/decisionintelligence/TFB) and the time series analytics leaderboard [OpenTS](https://decisionintelligence.github.io/OpenTS/).
 
