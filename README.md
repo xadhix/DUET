@@ -4,13 +4,21 @@
 
 [![KDD](https://img.shields.io/badge/KDD'25-DUET-orange)](https://arxiv.org/pdf/2412.10859)  [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  ![Stars](https://img.shields.io/github/stars/decisionintelligence/DUET)  [![Visits Badge](https://badges.pufler.dev/visits/decisionintelligence/DUET)](https://badges.pufler.dev/visits/decisionintelligence/DUET)
 
-<center>
-  [![KDD](https://img.shields.io/badge/KDD'25-DUET-orange)](https://arxiv.org/pdf/2412.10859)  
-  [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)  
-  [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-blue)](https://pytorch.org/)  
-  ![Stars](https://img.shields.io/github/stars/decisionintelligence/DUET)  
-  [![Visits Badge](https://badges.pufler.dev/visits/decisionintelligence/DUET)](https://badges.pufler.dev/visits/decisionintelligence/DUET)
-</center>
+<div style="text-align: center;">
+  <a href="https://arxiv.org/pdf/2412.10859">
+    <img src="https://img.shields.io/badge/KDD'25-DUET-orange" alt="KDD">
+  </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/Python-3.8%2B-blue" alt="Python">
+  </a>
+  <a href="https://pytorch.org/">
+    <img src="https://img.shields.io/badge/PyTorch-2.4.1-blue" alt="PyTorch">
+  </a>
+  <img src="https://img.shields.io/github/stars/decisionintelligence/DUET" alt="Stars">
+  <a href="https://badges.pufler.dev/visits/decisionintelligence/DUET">
+    <img src="https://badges.pufler.dev/visits/decisionintelligence/DUET" alt="Visits Badge">
+  </a>
+</div>
 
 
 This code is the official PyTorch implementation of our KDD'25 paper: [DUET](https://arxiv.org/pdf/2412.10859): Dual Clustering Enhanced Multivariate Time Series Forecasting.
