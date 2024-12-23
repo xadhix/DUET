@@ -64,7 +64,7 @@ Extensive experiments on  25 real-world datasets from 10 different application d
 
 
 <div align="center">
-<img alt="Logo" src="figures/full_results.png" width="100%"/>
+<img alt="Logo" src="figures/duet_full_results.png" width="100%"/>
 </div>
 
 ## Citation
