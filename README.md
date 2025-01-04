@@ -76,7 +76,7 @@ When running under pycharm，please escape the double quotes, remove the spaces,
 Such as: **'{"d_ff": 512, "d_model": 256, "horizon": 24}' ---> {\\"d_ff\\":512,\\"d_model\\":256,\\"horizon\\":24}**
 
 ```shell
---config-path "rolling_forecast_config.json" --data-name-list "ILI.csv" --strategy-args {\"horizon\":24} --model-name "time_series_library.DLinear" --model-hyper-params {\"batch_size\":16,\"d_ff\":512,\"d_model\":256,\"lr\":0.01,\"horizon\":24,\"seq_len\":104} --adapter "transformer_adapter"  --gpus 0  --num-workers 1  --timeout 60000  --save-path "ILI/DLinear"
+--config-path "rolling_forecast_config.json" --data-name-list "ILI.csv" --strategy-args {\"horizon\":24} --model-name "duet.DUET" --model-hyper-params {\"batch_size\":8,\"dropout\":0.15,\"fc_dropout\":0,\"d_ff\":1024,\"d_model\":128,\"n_heads\":1,\"e_layers\":2,\"lr\":0.0005,\"horizon\":24,\"seq_len\":104,\"factor\":3,\"lradj\":\"type1\",\"loss\":\"MAE\",\"num_experts\":2,\"k\":2,\"patch_len\":48,\"patience\":5,\"num_epochs\":100,\"CI\":1} --gpus 0 --num-workers 1 --timeout 60000 --save-path "ILI/DUET"
 ```
 
 ## Citation
