@@ -80,6 +80,7 @@ Such as: **'{"d_ff": 512, "d_model": 256, "horizon": 24}' ---> {\\"d_ff\\":512,\
 ```
 
 2. How to evaluate on your own time series?
+   
 please see [here](https://github.com/decisionintelligence/TFB/blob/master/docs/tutorials/steps_to_evaluate_your_own_time_series.md#TFB-data-format)!
 
 ## Citation
