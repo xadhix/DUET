@@ -106,6 +106,10 @@ If you find this repo useful, please cite our paper.
 }
 ```
 
+## Acknowledgement
+
+We would like to thank [Jiyanglin Li](https://github.com/erikalien5595) for identifying a bug in our code repository. The issue has been resolved, and all results have been re-tested to ensure accuracy.
+
 ## Contact
 
 If you have any questions or suggestions, feel free to contact:
