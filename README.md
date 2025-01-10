@@ -55,7 +55,7 @@ sh ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
 ## Results
 We utilize the Time Series Forecasting Benchmark ([TFB](https://github.com/decisionintelligence/TFB)) code repository as a unified evaluation framework, providing access to **all baseline codes, scripts, and results**. Following the settings in TFB, we do not apply the **"Drop Last"** trick to ensure a fair comparison.
 
-Extensive experiments on  25 real-world datasets from 10 different application domains, demonstrate that DUET achieves state-of-the-art~(SOTA) performance. We show the main results of the 10 commonly-used datasets below, click [here](./figures/other_results.jpg) to see the results for the remaining 15 datasets:
+Extensive experiments on  25 real-world datasets from 10 different application domains, demonstrate that DUET achieves state-of-the-art~(SOTA) performance. We show the main results of the 10 commonly-used datasets below, click [here](./figures/other_results.png) to see the results for the remaining 15 datasets:
 
 <div align="center">
 <img alt="Logo" src="figures/performance.png" width="50%"/>
@@ -81,6 +81,7 @@ Such as: **'{"d_ff": 512, "d_model": 256, "horizon": 24}' ---> {\\"d_ff\\":512,\
 
 2. How to evaluate on your own time series?
    
+
 please see [here](https://github.com/decisionintelligence/TFB/blob/master/docs/tutorials/steps_to_evaluate_your_own_time_series.md#TFB-data-format)!
 
 ## Citation
