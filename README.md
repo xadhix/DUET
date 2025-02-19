@@ -29,6 +29,8 @@ The important components of DUET: (a) Distribution Router; (b) Linear Pattern Ex
 
 ## Quickstart
 
+> [!IMPORTANT]
+> this project is fully tested under python 3.8, it is recommended that you set the Python version to 3.8.
 1. Requirements
 
 Given a python environment (**note**: this project is fully tested under python 3.8), install the dependencies with the following command:
