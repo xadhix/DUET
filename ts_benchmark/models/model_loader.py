@@ -28,7 +28,7 @@ def import_model_info(model_path: str) -> Union[Dict, Callable]:
 
     - required hyperparameters: This is a specially designed mechanism to enable models to relinquish the settings
       of some hyperparameters to the benchmark.
-      For example, if a model cannot automatically decide the best input window size
+      For example, if a model cannot automatically decide the best input window size  
       (corresponding hyperparameter `input_window_size`), it can leave the decision to the benchmark, so that
       the benchmark is able to use a globally recommended setting (corresponding hyperparameter `input_chunk_length`)
       to produce a fair comparison between different models;.
@@ -49,7 +49,7 @@ def import_model_info(model_path: str) -> Union[Dict, Callable]:
     - A callable that returns an instance compatible with :class:`ModelBase` interface when called with
       hyperparameters as keyword arguments. This callable may optionally support the following features:
 
-        - attribute required_hyper_params: Dictionary, optional; A dictionary of hyperparameters to be
+        - attribute required_hyper_params: Dictionary, optional; A dictionary of hyperparameters to be  
           filled by the benchmark, in format `{model_param_name: std_param_name}`.
 
     :param model_path: The fully qualified path to the model information.
@@ -112,8 +112,6 @@ def get_model_info(model_config: Dict) -> Union[Dict, Callable]:
          model_info = _import_attribute(ADAPTER[adapter_name])(model_info)
     
      return model_info
-
-    
 
 
 def get_model_hyper_params(
