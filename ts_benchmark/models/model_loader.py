@@ -93,23 +93,27 @@ def get_model_info(model_config: Dict) -> Union[Dict, Callable]:
     model_name_candidates = list(filter(None, model_name_candidates))
 
     model_info = None
-    for model_name in model_name_candidates:
-        try:
-            logger.info("Trying to load model %s", model_name)
-            model_info = import_model_info(model_name)
-        except (ImportError, AttributeError):
-            logger.info("Loading model %s failed", model_name)
-            continue
-        else:
-            break
+    
+    for model_name in model_name_candidates:  
+         try:
+             logger.info("Trying to load model %s", model_name)
+             model_info = import_model_info(model_name)  
+         except (ImportError, AttributeError) as e:  
+             logger.info("Loading model %s failed", model_name)
+             logger.info(f"Error: {e}")
+             continue
+         else:
+             break
+    
+     adapter_name = model_config.get("adapter")
+     if adapter_name is not None:
+         if adapter_name not in ADAPTER:  
+             raise ValueError(f"Unknown adapter {adapter_name}")
+         model_info = _import_attribute(ADAPTER[adapter_name])(model_info)
+    
+     return model_info
 
-    adapter_name = model_config.get("adapter")
-    if adapter_name is not None:
-        if adapter_name not in ADAPTER:
-            raise ValueError(f"Unknown adapter {adapter_name}")
-        model_info = _import_attribute(ADAPTER[adapter_name])(model_info)
-
-    return model_info
+    
 
 
 def get_model_hyper_params(
@@ -201,7 +205,7 @@ def get_models(all_model_config: Dict) -> List[ModelFactory]:
     # Traverse each model configuration
     for model_config in all_model_config["models"]:
         model_info = get_model_info(model_config)  # Obtain model information
-        fallback_model_name = model_config["model_name"].split(".")[-1]
+        fallback_model_name = model_config["model_name"].split(".")[-1]  
 
         # Analyze model information
         if isinstance(model_info, Dict):
