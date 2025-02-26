@@ -28,7 +28,7 @@ def import_model_info(model_path: str) -> Union[Dict, Callable]:
 
     - required hyperparameters: This is a specially designed mechanism to enable models to relinquish the settings
       of some hyperparameters to the benchmark.
-      For example, if a model cannot automatically decide the best input window size  
+      For example, if a model cannot automatically decide the best input window size
       (corresponding hyperparameter `input_window_size`), it can leave the decision to the benchmark, so that
       the benchmark is able to use a globally recommended setting (corresponding hyperparameter `input_chunk_length`)
       to produce a fair comparison between different models;.
@@ -49,7 +49,7 @@ def import_model_info(model_path: str) -> Union[Dict, Callable]:
     - A callable that returns an instance compatible with :class:`ModelBase` interface when called with
       hyperparameters as keyword arguments. This callable may optionally support the following features:
 
-        - attribute required_hyper_params: Dictionary, optional; A dictionary of hyperparameters to be  
+        - attribute required_hyper_params: Dictionary, optional; A dictionary of hyperparameters to be
           filled by the benchmark, in format `{model_param_name: std_param_name}`.
 
     :param model_path: The fully qualified path to the model information.
@@ -93,25 +93,24 @@ def get_model_info(model_config: Dict) -> Union[Dict, Callable]:
     model_name_candidates = list(filter(None, model_name_candidates))
 
     model_info = None
-    
-    for model_name in model_name_candidates:  
-         try:
-             logger.info("Trying to load model %s", model_name)
-             model_info = import_model_info(model_name)  
-         except (ImportError, AttributeError) as e:  
-             logger.info("Loading model %s failed", model_name)
-             logger.info(f"Error: {e}")
-             continue
-         else:
-             break
-    
-     adapter_name = model_config.get("adapter")
-     if adapter_name is not None:
-         if adapter_name not in ADAPTER:  
-             raise ValueError(f"Unknown adapter {adapter_name}")
-         model_info = _import_attribute(ADAPTER[adapter_name])(model_info)
-    
-     return model_info
+    for model_name in model_name_candidates:
+        try:
+            logger.info("Trying to load model %s", model_name)
+            model_info = import_model_info(model_name)
+        except (ImportError, AttributeError) as e:
+            logger.info("Loading model %s failed", model_name)
+            logger.info(f"Error: {e}")
+            continue
+        else:
+            break
+
+    adapter_name = model_config.get("adapter")
+    if adapter_name is not None:
+        if adapter_name not in ADAPTER:
+            raise ValueError(f"Unknown adapter {adapter_name}")
+        model_info = _import_attribute(ADAPTER[adapter_name])(model_info)
+
+    return model_info
 
 
 def get_model_hyper_params(
@@ -203,7 +202,7 @@ def get_models(all_model_config: Dict) -> List[ModelFactory]:
     # Traverse each model configuration
     for model_config in all_model_config["models"]:
         model_info = get_model_info(model_config)  # Obtain model information
-        fallback_model_name = model_config["model_name"].split(".")[-1]  
+        fallback_model_name = model_config["model_name"].split(".")[-1]
 
         # Analyze model information
         if isinstance(model_info, Dict):
