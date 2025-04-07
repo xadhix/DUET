@@ -60,14 +60,13 @@ sh ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
 We utilize the Time Series Forecasting Benchmark ([TFB](https://github.com/decisionintelligence/TFB)) code repository as a unified evaluation framework, providing access to **all baseline codes, scripts, and results**. Following the settings in TFB, we do not apply the **"Drop Last"** trick to ensure a fair comparison.
 
 
-- Unified hyperparameter results for the long-term forecasting task. We fix the look-back window length as 96
-for all experiments.
+- **Unified hyperparameter results** for the long-term forecasting task. **We fix the look-back window length as 96 for all experiments.**
 
 <div align="center">
 <img alt="Logo" src="figures/DUET_unified_seq_len_96.png" width="50%"/>
 </div>
 
-- Results from comprehensive parameter searches for the long-term forecasting task. The look-back window underwent testing with lengths 36 and 104 for FredMd, NASDAQ, NYSE, NN5, ILI, Covid-19, and Wike2000, and 96, 336, and 512 for all other datasets. We search for the best results from these look-back windows and report the best results.
+- Results from **comprehensive parameter searches** for the long-term forecasting task. The look-back window underwent testing with lengths **36 and 104** for FredMd, NASDAQ, NYSE, NN5, ILI, Covid-19, and Wike2000, and **96, 336, and 512** for all other datasets. **We search for the best results from these look-back windows and report the best results.**
 
 
 Extensive experiments on  25 real-world datasets from 10 different application domains, demonstrate that DUET achieves state-of-the-art~(SOTA) performance. We show the main results of the 10 commonly-used datasets below, click [here](./figures/other_results.png) to see the results for the remaining 15 datasets:
