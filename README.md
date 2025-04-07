@@ -8,6 +8,8 @@ This code is the official PyTorch implementation of our KDD'25 paper: [DUET](htt
 
 If you find this project helpful, please don't forget to give it a ⭐ Star to show your support. Thank you!
 
+🚩 News (2025.04) DUET has released the results of a long-term forecasting task with unified hyperparameters, where the **input length is fixed at 96** for all experiments. Click [here]() to view the results, and click [here]() to view the script for reproducing the results.
+
 🚩 News (2024.12) DUET has been included in the time series forecasting benchmark [TFB](https://github.com/decisionintelligence/TFB) and the time series analytics leaderboard [OpenTS](https://decisionintelligence.github.io/OpenTS/).
 
 🚩 News (2024.11) DUET has been accepted by SIGKDD 2025.
@@ -55,6 +57,17 @@ sh ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
 
 
 ## Results
+
+- Unified hyperparameter results for the long-term forecasting task. We fix the look-back window length as 96
+for all experiments.
+
+<div align="center">
+<img alt="Logo" src="figures/DUET_unified_seq_len_96.png" width="50%"/>
+</div>
+
+- Results from comprehensive parameter searches for the long-term forecasting task. The look-back window underwent testing with lengths 36 and 104 for FredMd, NASDAQ, NYSE, NN5, ILI, Covid-19, and Wike2000, and 96, 336, and 512 for all other datasets. We search for the best results from these look-back windows and report the best results.
+
+
 We utilize the Time Series Forecasting Benchmark ([TFB](https://github.com/decisionintelligence/TFB)) code repository as a unified evaluation framework, providing access to **all baseline codes, scripts, and results**. Following the settings in TFB, we do not apply the **"Drop Last"** trick to ensure a fair comparison.
 
 Extensive experiments on  25 real-world datasets from 10 different application domains, demonstrate that DUET achieves state-of-the-art~(SOTA) performance. We show the main results of the 10 commonly-used datasets below, click [here](./figures/other_results.png) to see the results for the remaining 15 datasets:
