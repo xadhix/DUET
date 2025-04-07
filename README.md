@@ -59,7 +59,7 @@ sh ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
 ## Results
 We utilize the Time Series Forecasting Benchmark ([TFB](https://github.com/decisionintelligence/TFB)) code repository as a unified evaluation framework, providing access to **all baseline codes, scripts, and results**. Following the settings in TFB, we do not apply the **"Drop Last"** trick to ensure a fair comparison.
 
-### Results of unified hyperparameters
+### Results of unified hyperparameters with a fixed look-back window length of 96
 **Unified hyperparameter results** for the long-term forecasting task. **We fix the look-back window length as 96 for all experiments.**
 
 <div align="center">
