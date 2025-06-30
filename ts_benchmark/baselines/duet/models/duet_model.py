@@ -8,9 +8,9 @@ import torch
 class DUETModel(nn.Module):
     def __init__(self, config):
         super(DUETModel, self).__init__()
-        self.cluster = Linear_extractor_cluster(config)
+        self.cluster = Linear_extractor_cluster(config) ## TCM
         self.CI = config.CI
-        self.n_vars = config.enc_in
+        self.n_vars = config.enc_in ## Number of channels in the input time series
         self.mask_generator = Mahalanobis_mask(config.seq_len)
         self.Channel_transformer = Encoder(
             [

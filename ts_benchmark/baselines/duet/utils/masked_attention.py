@@ -140,8 +140,8 @@ class AttentionLayer(nn.Module):
 class Mahalanobis_mask(nn.Module):
     def __init__(self, input_size):
         super(Mahalanobis_mask, self).__init__()
-        frequency_size = input_size // 2 + 1
-        self.A = nn.Parameter(torch.randn(frequency_size, frequency_size), requires_grad=True)
+        frequency_size = input_size // 2 + 1 ## T/2 Dimension
+        self.A = nn.Parameter(torch.randn(frequency_size, frequency_size), requires_grad=True) ## A is a learnable parameter
 
     def calculate_prob_distance(self, X):
         XF = torch.abs(torch.fft.rfft(X, dim=-1))
@@ -161,8 +161,8 @@ class Mahalanobis_mask(nn.Module):
 
         identity_matrices = 1 - torch.eye(exp_dist.shape[-1])
         mask = identity_matrices.repeat(exp_dist.shape[0], 1, 1).to(exp_dist.device)
-        exp_dist = torch.einsum("bxc,bxc->bxc", exp_dist, mask)
-        exp_max, _ = torch.max(exp_dist, dim=-1, keepdim=True)
+        exp_dist = torch.einsum("bxc,bxc->bxc", exp_dist, mask) ## Cij
+        exp_max, _ = torch.max(exp_dist, dim=-1, keepdim=True) ## B x C x 1
         exp_max = exp_max.detach()
 
         # B x C x C

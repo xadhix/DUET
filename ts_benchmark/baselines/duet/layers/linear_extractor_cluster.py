@@ -121,25 +121,25 @@ class Linear_extractor_cluster(nn.Module):
 
     def __init__(self, config):
         super(Linear_extractor_cluster, self).__init__()
-        self.noisy_gating = config.noisy_gating
-        self.num_experts = config.num_experts
-        self.input_size = config.seq_len
-        self.k = config.k
+        self.noisy_gating = config.noisy_gating ## Noisy Gating flag
+        self.num_experts = config.num_experts ## M value
+        self.input_size = config.seq_len ## Length of the input sequence
+        self.k = config.k ## TopK Clusters
         # instantiate experts
-        self.experts = nn.ModuleList([expert(config) for _ in range(self.num_experts)])
-        self.W_h = nn.Parameter(torch.eye(self.num_experts))
-        self.gate = encoder(config)
-        self.noise = encoder(config)
+        self.experts = nn.ModuleList([expert(config) for _ in range(self.num_experts)]) ## Linear Pattern Extractor Experts (M Experts)
+        self.W_h = nn.Parameter(torch.eye(self.num_experts)) ## Weight matrix for the experts of M x M size
+        self.gate = encoder(config) ## Encoder for the gating mechanism (mu)
+        self.noise = encoder(config) ## Encoder for the noise mechanism (epsilon)
 
         self.n_vars = config.enc_in
-        self.revin = RevIN(self.n_vars)
+        self.revin = RevIN(self.n_vars) ## INSTANCE NORM AS PER DIAGRAM
 
-        self.CI = config.CI
-        self.softplus = nn.Softplus()
-        self.softmax = nn.Softmax(1)
-        self.register_buffer("mean", torch.tensor([0.0]))
-        self.register_buffer("std", torch.tensor([1.0]))
-        assert self.k <= self.num_experts
+        self.CI = config.CI ## Channel Independent (CI) flag
+        self.softplus = nn.Softplus() ## Softplus activation for noise standard deviation
+        self.softmax = nn.Softmax(1) ## Softmax activation for the gating mechanism
+        self.register_buffer("mean", torch.tensor([0.0])) ## Mean for the noise distribution
+        self.register_buffer("std", torch.tensor([1.0])) ## Standard deviation for the noise distribution
+        assert self.k <= self.num_experts ## Ensure that k is less than or equal to the number of experts
 
     def cv_squared(self, x):
         """The squared coefficient of variation of a sample.
