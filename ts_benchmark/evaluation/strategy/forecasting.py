@@ -51,7 +51,7 @@ class ForecastingStrategy(Strategy, metaclass=abc.ABCMeta):
         meta_info = data_pool.get_series_meta_info(series_name)
 
         try:
-            single_series_results = self._execute(
+            single_series_results = self._execute( # This is where the actual execution happens, Fixed Forecast or Rolling Forecast
                 data, meta_info, model_factory, series_name
             )
         except Exception as e:
