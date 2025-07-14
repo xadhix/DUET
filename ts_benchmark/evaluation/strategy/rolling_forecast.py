@@ -182,6 +182,7 @@ class RollingForecast(ForecastingStrategy):
         meta_info: Optional[pd.Series],
         model_factory: ModelFactory,
         series_name: str,
+        save_path: Optional[str] = None,
     ) -> List:
         """
         The entry function of execution pipeline of forecasting tasks
@@ -204,6 +205,7 @@ class RollingForecast(ForecastingStrategy):
         meta_info: Optional[pd.Series],
         model: ModelBase,
         series_name: str,
+        save_path: Optional[str] = None,
     ) -> List:
         """
         The sample execution pipeline of forecasting tasks.
@@ -227,7 +229,7 @@ class RollingForecast(ForecastingStrategy):
 
         start_fit_time = time.time()
         fit_method = model.forecast_fit if hasattr(model, "forecast_fit") else model.fit
-        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv)
+        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv, save_path = save_path)
         end_fit_time = time.time()
 
         eval_scaler = self._get_eval_scaler(train_valid_data, train_ratio_in_tv)
@@ -282,6 +284,7 @@ class RollingForecast(ForecastingStrategy):
         meta_info: Optional[pd.Series],
         model: ModelBase,
         series_name: str,
+        save_path: Optional[str] = None,
     ) -> List:
         """
         The batch execution pipeline of forecasting tasks.
@@ -306,7 +309,7 @@ class RollingForecast(ForecastingStrategy):
 
         start_fit_time = time.time()
         fit_method = model.forecast_fit if hasattr(model, "forecast_fit") else model.fit
-        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv)
+        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv, save_path = save_path)
         end_fit_time = time.time()
 
         eval_scaler = self._get_eval_scaler(train_valid_data, train_ratio_in_tv)

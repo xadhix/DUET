@@ -47,6 +47,7 @@ class FixedForecast(ForecastingStrategy):
         meta_info: Optional[pd.Series],
         model_factory: ModelFactory,
         series_name: str,
+        save_path: Optional[str] = None,
     ) -> List:
         model = model_factory()
 
@@ -63,7 +64,7 @@ class FixedForecast(ForecastingStrategy):
         train_valid_data, test_data = split_before(series, train_length)
         start_fit_time = time.time()
         fit_method = model.forecast_fit if hasattr(model, "forecast_fit") else model.fit
-        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv)
+        fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv, save_path = save_path)
         end_fit_time = time.time()
         predicted = model.forecast(horizon, train_valid_data)
         end_inference_time = time.time()
