@@ -67,12 +67,13 @@ class TransformerConfig:
 
 
 class DUET(ModelBase):
-    def __init__(self, **kwargs):
+    def __init__(self, save_path=None, **kwargs):
         super(DUET, self).__init__()
         self.config = TransformerConfig(**kwargs)
         self.scaler = StandardScaler()
         self.seq_len = self.config.seq_len
         self.win_size = self.config.seq_len
+        self.save_path = save_path
 
     @property
     def model_name(self):
@@ -193,7 +194,9 @@ class DUET(ModelBase):
     def validate(self, valid_data_loader, criterion):
         config = self.config
         total_loss = []
+        # print("before eval")
         self.model.eval()
+        # print("after eval")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         with torch.no_grad():
             for input, target, input_mark, target_mark in valid_data_loader:
@@ -203,16 +206,26 @@ class DUET(ModelBase):
                     input_mark.to(device),
                     target_mark.to(device),
                 )
-
+                # self.model.already_printed = False  # Reset the already_printed flag for each epoch     
+                # print("model called for validation")           
                 output, _ = self.model(input)
 
                 target = target[:, -config.horizon:, :]
                 output = output[:, -config.horizon:, :]
+
+                # print("target shape:", target.shape)
+                # output[:, :, 0] = 0.0  # Assuming the first channel is the one to be zeroed out 
+                # print("hopefully real values")
+                # print("target:", target)    
+                # print("output:", output)
+
                 loss = criterion(output, target).detach().cpu().numpy()
                 total_loss.append(loss)
 
         total_loss = np.mean(total_loss)
+        # print("validation training  ")
         self.model.train()
+        # print("validation training finished")
         return total_loss
 
     def forecast_fit(self, train_valid_data: pd.DataFrame, train_ratio_in_tv: float) -> "ModelBase":
@@ -230,8 +243,8 @@ class DUET(ModelBase):
         else:
             train_drop_last = True
             self.multi_forecasting_hyper_param_tune(train_valid_data)
-
-        self.model = DUETModel(self.config)
+        self.model = DUETModel(self.config) 
+        # self.model = DUETModel(self.config, channel_names=train_valid_data.columns.tolist())  ### added channel names have to be removed later
 
         print(
             "----------------------------------------------------------",
@@ -239,11 +252,36 @@ class DUET(ModelBase):
         )
         config = self.config
         train_data, valid_data = train_val_split(
-            train_valid_data, train_ratio_in_tv, config.seq_len
+            train_valid_data, train_ratio_in_tv, config.seq_len  # train_valid_data includes both train and validation data
         )
 
-        self.scaler.fit(train_data.values)
+        #---------------------------------------------------------
+        # # Identify the index of 'OT' in the columns
 
+        # # channel names for Etth1 ["HUFL", "HULL", "MUFL", "MULL", "LUFL", "LULL", "OT"]
+
+        channel_names = train_data.columns.tolist()
+        print(f"[DEBUG] Channel names: {channel_names}")
+        # channel_to_zero = "HUFL"
+        # channel_idx = channel_names.index(channel_to_zero)
+
+        # # Set the OT channel to constant before normalization
+        # print(f"[DEBUG] Setting '{channel_to_zero}' (index {channel_idx}) to constant zero.")
+        # train_data.iloc[:, channel_idx] = 0.0
+
+        # # Doing the same for validation data if it exists
+        # if train_ratio_in_tv != 1:
+        #     valid_data.iloc[:, channel_idx] = 0.0
+        #----------------------------------------------------------
+
+        # ========================================================
+        # print("fitting train_data check for zero :", train_data.values)
+        # print("fitting valid_data: check for zero :", valid_data.values)
+    
+        # ========================================================
+        self.scaler.fit(train_data.values)
+        # print("scaler mean :", self.scaler.mean_)
+        # print("scaler var :", self.scaler.var_)
         if config.norm:
             train_data = pd.DataFrame(
                 self.scaler.transform(train_data.values),
@@ -267,6 +305,9 @@ class DUET(ModelBase):
                 drop_last=False,
             )
 
+            # print("valid_data_loader:", valid_data_loader)
+            # print("valid_data:", valid_data)
+
         train_dataset, train_data_loader = forecasting_data_provider(
             train_data,
             config,
@@ -275,6 +316,9 @@ class DUET(ModelBase):
             shuffle=True,
             drop_last=train_drop_last,
         )
+
+        # print("train_data_loader:", train_data_loader)
+        # print("train_data:", train_dataset)
 
         # Define the loss function and optimizer
         if config.loss == "MSE":
@@ -288,6 +332,11 @@ class DUET(ModelBase):
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        ## Check if CUDA is available and set the device accordingly
+        print(f"Using device: {device}")   
+
+        #----------------------------------------------
+
         self.early_stopping = EarlyStopping(patience=config.patience)
         self.model.to(device)
         total_params = sum(
@@ -297,7 +346,13 @@ class DUET(ModelBase):
         print(f"Total trainable parameters: {total_params}")
 
         for epoch in range(config.num_epochs):
+            
+            
+            # print("forecast fit training with epoch:", epoch)
+
             self.model.train()
+
+            # print("After training forecast fit epoch:", epoch)
             # for input, target, input_mark, target_mark in train_data_loader:
             for i, (input, target, input_mark, target_mark) in enumerate(
                     train_data_loader
@@ -311,11 +366,40 @@ class DUET(ModelBase):
                 )
                 # decoder input
 
+                #-----------------------------------------------
+                # print("input:", input)
+                # print("target:", target)
+                # print("input_mark:", input_mark)
+                # print("target_mark:", target_mark)
+                #-----------------------------------------------
+                # self.model.already_printed = False  # Reset the already_printed flag for each epoch
+
                 output, loss_importance = self.model(input)
 
                 target = target[:, -config.horizon:, :]
                 output = output[:, -config.horizon:, :]
+
+                #-----------------------------------------------
+
+                # making the values zero so that it does not contribute to the loss
+                # output[:, :, channel_idx] = 0.0
+                # print("target shape:", target.shape)
+                # print("output shape:", output.shape)
+                # print("target:", target)
+                # print("output:", output)
+
+                #-----------------------------------------------
+
                 loss = criterion(output, target)
+
+                ############################################
+
+                
+
+                # print("loss:", loss)
+
+
+                ##############################################
 
                 total_loss = loss + loss_importance
                 total_loss.backward()
@@ -330,6 +414,79 @@ class DUET(ModelBase):
 
             adjust_learning_rate(optimizer, epoch + 1, config)
 
+        # Save the trained model
+        self._save_model()
+        return self
+
+    def _save_model(self, save_path=None):
+        """
+        Save the trained DUET model with its state dict and configuration.
+        
+        Args:
+            save_path: Optional custom path to save the model. If None, uses instance save_path or default.
+        
+        Returns:
+            str: Path where the model was saved
+        """
+        import os
+        import datetime
+        
+        # Use the best checkpoint if available from early stopping
+        if hasattr(self, 'early_stopping') and self.early_stopping.check_point is not None:
+            # Load the best checkpoint first
+            self.model.load_state_dict(self.early_stopping.check_point)
+            print("Using best model from early stopping checkpoint")
+        
+        # Determine the output path - priority: parameter > instance attribute > default
+        if save_path is not None:
+            base_path = save_path
+        elif hasattr(self, 'save_path') and self.save_path is not None:
+            base_path = self.save_path
+        else:
+            base_path = "result"
+        
+        # Create timestamp for unique filename
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_path = os.path.join(base_path, f"duet_model_h{self.config.horizon}_{timestamp}.pth")
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        # Prepare the save dictionary with comprehensive information
+        save_dict = {
+            "model_state_dict": self.model.state_dict(),
+            "config": self.config.__dict__,
+            "scaler_mean": self.scaler.mean_ if hasattr(self.scaler, 'mean_') else None,
+            "scaler_scale": self.scaler.scale_ if hasattr(self.scaler, 'scale_') else None,
+            "model_class": self.model.__class__.__name__,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "horizon": self.config.horizon,
+            "seq_len": self.config.seq_len,
+        }
+        
+        # Save the model
+        torch.save(save_dict, output_path)
+        print(f"✓ Model saved successfully to: {output_path}")
+        return output_path
+
+    def save_model(self, save_path=None):
+        """
+        Public method to manually save the model at any time.
+        
+        Args:
+            save_path: Optional custom path to save the model
+            
+        Returns:
+            str: Path where the model was saved
+        """
+        if self.model is None:
+            print("Error: No model to save. Train the model first using forecast_fit().")
+            return None
+            
+        return self._save_model(save_path)
+
+
+
     def forecast(self, horizon: int, train: pd.DataFrame) -> np.ndarray:
         """
         Make predictions.
@@ -340,6 +497,19 @@ class DUET(ModelBase):
         """
         if self.early_stopping.check_point is not None:
             self.model.load_state_dict(self.early_stopping.check_point)
+
+        
+        #---------------------------------------------
+        # ----- Make 'OT' constant before normalizing -----
+        # channel_names = train.columns.tolist()
+        # channel_to_zero = "HUFL"
+        # channel_idx = channel_names.index(channel_to_zero)
+
+        # print(f"[DEBUG] Setting '{channel_to_zero}' (index {channel_idx}) to constant zero for forecasting.")
+        
+        # train.iloc[:, channel_idx] = 0.0
+
+        #----------------------------------------------
 
         if self.config.norm:
             train = pd.DataFrame(
@@ -361,9 +531,14 @@ class DUET(ModelBase):
             test, config, timeenc=1, batch_size=1, shuffle=False, drop_last=False
         )
 
+        # print("test_data_loader:", test_data_loader)
+        # print("test_data:", test_data_set)
+
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(device)
+        # print("forecast eval started")
         self.model.eval()
+        # print("forecast eval finished")
 
         with torch.no_grad():
             answer = None
@@ -375,7 +550,8 @@ class DUET(ModelBase):
                         input_mark.to(device),
                         target_mark.to(device),
                     )
-
+                    # self.model.already_printed = False  # Reset the already_printed flag for each epoch
+                    # print("forecast in use ")
                     output, _ = self.model(input)
 
                 column_num = output.shape[-1]
@@ -408,6 +584,8 @@ class DUET(ModelBase):
                     shuffle=False,
                     drop_last=False,
                 )
+                # print("test_data_loader:", test_data_loader)
+                # print("test_data:", test_data_set)
 
     def batch_forecast(
         self, horizon: int, batch_maker: BatchMaker, **kwargs
@@ -426,10 +604,21 @@ class DUET(ModelBase):
             raise ValueError("Model not trained. Call the fit() function first.")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(device)
+        # print("batch forecast eval started")
         self.model.eval()
-
+        # print("batch forecast eval finished")
         input_data = batch_maker.make_batch(self.config.batch_size, self.config.seq_len)
         input_np = input_data["input"]
+
+        #----------------------------------------------
+        # ----- Make 'OT' constant before normalizing -----
+        # channel_to_zero = 6  # OT is usually at index 6 in ETTh1 this index may vary based on the dataset and the channel that we want to set to zero
+        # print(f"[DEBUG] Setting channel {channel_to_zero} (OT) to constant zero in batch forecast.")
+        # input_np[:, :, channel_to_zero] = 0.0
+        # print("the batch forecast ", input_np)
+        #----------------------------------------------
+
+        # Store original input_np before normalization for potential return
 
         if self.config.norm:
             origin_shape = input_np.shape
@@ -441,9 +630,10 @@ class DUET(ModelBase):
             math.ceil(horizon / self.config.horizon) + 1
         ) * self.config.horizon
         all_mark = self._padding_time_stamp_mark(input_index, padding_len)
-
+        # print("input_np",input_np)
         answers = self._perform_rolling_predictions(horizon, input_np, all_mark, device)
-
+        # print("answers shape:", answers.shape)
+        # print("answers:", answers)
         if self.config.norm:
             flattened_data = answers.reshape((-1, answers.shape[-1]))
             answers = self.scaler.inverse_transform(flattened_data).reshape(
@@ -481,7 +671,9 @@ class DUET(ModelBase):
                     torch.tensor(input_mark_np, dtype=torch.float32).to(device),
                     torch.tensor(target_mark_np, dtype=torch.float32).to(device),
                 )
-                output, _ = self.model(input)
+                
+                self.model.already_printed = False  # Reset the already_printed flag for each epoch
+                output, _ , = self.model(input)
                 column_num = output.shape[-1]
                 real_batch_size = output.shape[0]
                 answer = (
@@ -545,3 +737,69 @@ class DUET(ModelBase):
             :,
         ]
         return input_np, target_np, input_mark_np, target_mark_np
+
+    def load_model(self, model_path):
+        """
+        Load a saved DUET model from the specified path.
+        
+        Args:
+            model_path: Path to the saved model file
+            
+        Returns:
+            bool: True if model loaded successfully, False otherwise
+        """
+        try:
+            import torch
+            import os
+            
+            if not os.path.exists(model_path):
+                print(f"Error: Model file not found at {model_path}")
+                return False
+            
+            print(f"Loading model from: {model_path}")
+            
+            # Load the checkpoint
+            checkpoint = torch.load(model_path, map_location='cpu')
+            
+            # Update configuration from saved model
+            if 'config' in checkpoint:
+                saved_config = checkpoint['config']
+                for key, value in saved_config.items():
+                    if hasattr(self.config, key):
+                        setattr(self.config, key, value)
+            
+            # Initialize the model with the loaded configuration
+            from ts_benchmark.baselines.duet.models.duet_model import DUETModel
+            self.model = DUETModel(self.config)
+            
+            # Load the model state dict
+            if 'model_state_dict' in checkpoint:
+                self.model.load_state_dict(checkpoint['model_state_dict'])
+            else:
+                print("Error: No model state dict found in checkpoint")
+                return False
+            
+            # Load scaler parameters if available
+            if 'scaler_mean' in checkpoint and checkpoint['scaler_mean'] is not None:
+                self.scaler.mean_ = checkpoint['scaler_mean']
+            if 'scaler_scale' in checkpoint and checkpoint['scaler_scale'] is not None:
+                self.scaler.scale_ = checkpoint['scaler_scale']
+                self.scaler.var_ = checkpoint['scaler_scale'] ** 2  # variance = scale^2
+            
+            # Initialize early stopping
+            if not hasattr(self, 'early_stopping'):
+                from ts_benchmark.baselines.duet.utils.tools import EarlyStopping
+                self.early_stopping = EarlyStopping(patience=self.config.patience)
+            
+            print(f"✓ Model loaded successfully from: {model_path}")
+            print(f"Model timestamp: {checkpoint.get('timestamp', 'Unknown')}")
+            print(f"Model horizon: {checkpoint.get('horizon', 'Unknown')}")
+            print(f"Model seq_len: {checkpoint.get('seq_len', 'Unknown')}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error loading model: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False

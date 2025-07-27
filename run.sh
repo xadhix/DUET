@@ -1,0 +1,29 @@
+#!/bin/bash
+cd /work/dlclarge2/bobbye-ejbduet/duet
+conda activate duet
+source ./scripts/multivariate_forecast/AQShunyi_script/DUET.sh
+source ./scripts/multivariate_forecast/AQWan_script/DUET.sh
+source ./scripts/multivariate_forecast/Covid-19_script/DUET.sh
+source ./scripts/multivariate_forecast/CzeLan_script/DUET.sh
+source ./scripts/multivariate_forecast/DUET_unified_seq_len_96.sh
+source ./scripts/multivariate_forecast/Electricity_script/DUET.sh
+source ./scripts/multivariate_forecast/ETTh1_script/DUET.sh
+source ./scripts/multivariate_forecast/ETTh2_script/DUET.sh
+source ./scripts/multivariate_forecast/ETTm1_script/DUET.sh
+source ./scripts/multivariate_forecast/ETTm2_script/DUET.sh
+source ./scripts/multivariate_forecast/Exchange_script/DUET.sh
+source ./scripts/multivariate_forecast/FRED-MD_script/DUET.sh
+source ./scripts/multivariate_forecast/ILI_script/DUET.sh
+source ./scripts/multivariate_forecast/METR-LA_script/DUET.sh
+source ./scripts/multivariate_forecast/NASDAQ_script/DUET.sh
+source ./scripts/multivariate_forecast/NN5_script/DUET.sh
+source ./scripts/multivariate_forecast/NYSE_script/DUET.sh
+source ./scripts/multivariate_forecast/PEMS-BAY_script/DUET.sh
+source ./scripts/multivariate_forecast/PEMS04_script/DUET.sh
+source ./scripts/multivariate_forecast/PEMS08_script/DUET.sh
+source ./scripts/multivariate_forecast/Solar_script/DUET.sh
+source ./scripts/multivariate_forecast/Traffic_script/DUET.sh
+source ./scripts/multivariate_forecast/Weather_script/DUET.sh
+source ./scripts/multivariate_forecast/Wike2000_script/DUET.sh
+source ./scripts/multivariate_forecast/Wind_script/DUET.sh
+source ./scripts/multivariate_forecast/ZafNoo_script/DUET.sh

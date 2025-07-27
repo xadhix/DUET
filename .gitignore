@@ -5,3 +5,10 @@ result/
 .git
 *.DS_Store
 venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.npy
+*.log

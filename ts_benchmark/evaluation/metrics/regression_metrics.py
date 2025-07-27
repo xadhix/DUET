@@ -2,9 +2,14 @@
 
 import numpy as np
 
-__all__ = ["mae", "mse", "rmse", "mape", "smape", "mase", 'wape', 'msmape', "mae_norm", "mse_norm", "rmse_norm", "mape_norm", "smape_norm", "mase_norm", 'wape_norm', 'msmape_norm']
+__all__ = ["mae", "mse", "rmse", "mape", "smape", "mase", 'wape', 'msmape', "mae_norm", "mse_norm", "rmse_norm", "mape_norm", "smape_norm", "mase_norm", 'wape_norm', 'msmape_norm', "custom_metric"]
 
+###adding new custom function ################
+def custom_metric(actual: np.ndarray, predicted: np.ndarray, scaler: object = None, **kwargs):
+    channel_count = actual.shape[1]  ###### -1 if we are skipping just one channel
+    return (np.sum(np.square(_error_norm(actual, predicted, scaler)))/(channel_count-1))
 
+##############################################
 def _error(actual: np.ndarray, predicted: np.ndarray, **kwargs):
     """ Simple error """
     return actual - predicted
@@ -108,6 +113,8 @@ def msmape(actual: np.ndarray, predicted: np.ndarray, epsilon: float = 0.1, **kw
 
 def _error_norm(actual: np.ndarray, predicted: np.ndarray, scaler: object,  **kwargs):
     """ Simple error """
+    # print("scaled actual:", scaler.transform(actual))
+    # print("scaled predicted:", scaler.transform(predicted))
     return scaler.transform(actual) - scaler.transform(predicted)
 
 
@@ -118,6 +125,10 @@ def _percentage_error_norm(actual: np.ndarray, predicted: np.ndarray, scaler: ob
 
 def mse_norm(actual: np.ndarray, predicted: np.ndarray, scaler: object, **kwargs):
     """ Mean Squared Error """
+    # print("Mean Squared Error")
+    # print("actual:", actual)
+    # print("predicted:", predicted)
+    # print("scaler:", scaler)
     return np.mean(np.square(_error_norm(actual, predicted, scaler)))
 
 
@@ -128,7 +139,10 @@ def rmse_norm(actual: np.ndarray, predicted: np.ndarray, scaler: object, **kwarg
 
 def mae_norm(actual: np.ndarray, predicted: np.ndarray, scaler: object, **kwargs):
     """ Mean Absolute Error """
-
+    # print("Mean Absolute Error")
+    # print("actual:", actual)
+    # print("predicted:", predicted)
+    # print("scaler:", scaler)
     return np.mean(np.abs(_error_norm(actual, predicted, scaler)))
 
 

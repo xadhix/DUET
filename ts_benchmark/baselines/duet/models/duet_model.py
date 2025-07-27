@@ -6,11 +6,13 @@ import torch
 
 
 class DUETModel(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, channel_names=None):
         super(DUETModel, self).__init__()
-        self.cluster = Linear_extractor_cluster(config) ## TCM
+        self.already_printed = True
+        self.cluster = Linear_extractor_cluster(config)
         self.CI = config.CI
-        self.n_vars = config.enc_in ## Number of channels in the input time series
+        self.n_vars = config.enc_in
+        self.channel_names = channel_names
         self.mask_generator = Mahalanobis_mask(config.seq_len)
         self.Channel_transformer = Encoder(
             [
@@ -37,6 +39,10 @@ class DUETModel(nn.Module):
 
         self.linear_head = nn.Sequential(nn.Linear(config.d_model, config.pred_len), nn.Dropout(config.fc_dropout))
 
+    def set_channel_names(self, channel_names):
+        """Set channel names for better visualization of clusters."""
+        self.channel_names = channel_names
+
     def forward(self, input):
         # x: [batch_size, seq_len, n_vars]
         if self.CI:
@@ -55,7 +61,16 @@ class DUETModel(nn.Module):
             changed_input = rearrange(input, 'b l n -> b n l')
             channel_mask = self.mask_generator(changed_input)
 
+            if not self.already_printed:
+                print(f"Channel mask shape: {channel_mask.shape}")
+                print(f"Channel mask: {channel_mask}")
+                # exit(0)
+                self.already_printed = True
+
             channel_group_feature, attention = self.Channel_transformer(x=temporal_feature, attn_mask=channel_mask)
+
+            # print("attention", attention)  # Print the attention for the first layer
+            # print("channel_group_feature", channel_group_feature)
 
             output = self.linear_head(channel_group_feature)
         else:

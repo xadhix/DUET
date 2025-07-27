@@ -48,6 +48,42 @@ class ForecastingStrategy(Strategy, metaclass=abc.ABCMeta):
 
         data_pool = DataPool().get_pool()
         data = data_pool.get_series(series_name)
+
+        ##################################################################
+        # operation on the dataset , remove channels , zero them out or entirely remove 
+        ##############################################################################################################
+
+        #  HUFL   HULL   MUFL   MULL   LUFL   LULL         OT
+        # Manually zero out specific channels
+        # for col in ["LULL"]:
+        #     if col in data.columns:
+        #         data[col] = 0.0
+        #         print(f"{col} channel has been zeroed.")
+        #     else:
+        #         raise ValueError(f"{col} channel not found in series.")
+            
+
+        # print("data after zeroing channels:", data)
+
+
+        # List of channels to delete
+        # channels_to_remove = ["OT"]
+
+        # # Make sure all exist before dropping
+        # missing = [ch for ch in channels_to_remove if ch not in data.columns]
+        # if missing:
+        #     raise ValueError(f"Cannot remove missing channels: {missing}")
+
+        # # Drop the channels
+        # data = data.drop(columns=channels_to_remove)
+        # print(f"Removed channels: {channels_to_remove}")
+
+        # print("data after removing channels:", data)
+
+        
+        ##############################################################################################################
+
+        ###################################################################
         meta_info = data_pool.get_series_meta_info(series_name)
 
         try:

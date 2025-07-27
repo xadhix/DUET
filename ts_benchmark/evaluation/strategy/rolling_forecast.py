@@ -39,6 +39,15 @@ class RollingForecastEvalBatchMaker:
         ]
         series = self.series.values
         windows = sliding_window_view(series, window_shape=(win_size, series.shape[1]))
+        ###############
+        # print("windows shape:", windows.shape)
+        # print("win_size:", win_size)
+        # print("index_list:", len(index_list))
+        # print("np.array(index_list):", np.array(index_list))
+        # print("np.array(index_list) - win_size:", np.array(index_list) - win_size)
+
+
+        ##########################
         predict_batch = windows[np.array(index_list) - win_size]
         predict_batch = np.squeeze(predict_batch, axis=1)
 
@@ -192,10 +201,13 @@ class RollingForecast(ForecastingStrategy):
         :param series_name: the name of the target series.
         :return: The evaluation results.
         """
+        print(f"Executing rolling forecast for series: {series_name}")
         model = model_factory()
         if model.batch_forecast.__annotations__.get("not_implemented_batch"):
+            print("eval sample if part")
             return self._eval_sample(series, meta_info, model, series_name)
         else:
+            print("eval batch else part")
             return self._eval_batch(series, meta_info, model, series_name)
  
     def _eval_sample(
@@ -217,6 +229,7 @@ class RollingForecast(ForecastingStrategy):
         stride = self._get_scalar_config_value("stride", series_name)
         horizon = self._get_scalar_config_value("horizon", series_name)
         num_rollings = self._get_scalar_config_value("num_rollings", series_name)
+        # print("num_rollings:", num_rollings)
         train_ratio_in_tv = self._get_scalar_config_value(
             "train_ratio_in_tv", series_name
         )
@@ -295,6 +308,7 @@ class RollingForecast(ForecastingStrategy):
         stride = self._get_scalar_config_value("stride", series_name)
         horizon = self._get_scalar_config_value("horizon", series_name)
         num_rollings = self._get_scalar_config_value("num_rollings", series_name)
+        # print("num_rollings:", num_rollings)
 
         train_ratio_in_tv = self._get_scalar_config_value(
             "train_ratio_in_tv", series_name
@@ -304,6 +318,17 @@ class RollingForecast(ForecastingStrategy):
         train_length, test_length = self._get_split_lens(series, meta_info, tv_ratio)
         train_valid_data, test_data = split_before(series, train_length)
 
+
+
+
+        
+
+        ###############################################
+        # print("series:", series)
+        # print("train_valid_data:", train_valid_data)
+
+        ##################################################
+
         start_fit_time = time.time()
         fit_method = model.forecast_fit if hasattr(model, "forecast_fit") else model.fit
         fit_method(train_valid_data, train_ratio_in_tv=train_ratio_in_tv)
@@ -311,7 +336,15 @@ class RollingForecast(ForecastingStrategy):
 
         eval_scaler = self._get_eval_scaler(train_valid_data, train_ratio_in_tv)
 
+
         index_list = self._get_index(train_length, test_length, horizon, stride)
+        # printing train_length, test_length, horizon, stride
+        # print("train_length:", train_length)
+        # print("test_length:", test_length)
+        # print("horizon:", horizon)
+        # print("stride:", stride)
+        # print("roll index_list:", index_list)
+        # print("num_rollings:", num_rollings)
         index_list = index_list[:num_rollings]
 
         batch_maker = RollingForecastEvalBatchMaker(
@@ -322,20 +355,50 @@ class RollingForecast(ForecastingStrategy):
         all_predicts = []
         total_inference_time = 0
         predict_batch_maker = RollingForecastPredictBatchMaker(batch_maker)
+        print("rolling forecast started")
         while predict_batch_maker.has_more_batches():
             start_inference_time = time.time()
             predicts = model.batch_forecast(horizon, predict_batch_maker)
+            # print("predicts:", predicts)
             end_inference_time = time.time()
             total_inference_time += end_inference_time - start_inference_time
             all_predicts.append(predicts)
+        
+        print("rolling forecast finished")
 
         all_predicts = np.concatenate(all_predicts, axis=0)
         targets = batch_maker.make_batch_eval(horizon)["target"]
+        ########################################################################
+        exclude_idx = -1   #### also added by us  channel to be zeroed 
+        
+        # Add timestamp to filename
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        if exclude_idx == -1:
+            np.save(f'all_predicts_{series_name}_no_skipping_{timestamp}.npy', all_predicts) 
+            np.save(f'targets_{series_name}_no_skipping_{timestamp}.npy', targets)
+        else:
+            np.save(f'all_predicts_{series_name}_exclude_{exclude_idx}_{timestamp}.npy', all_predicts) 
+            np.save(f'targets_{series_name}_exclude_{exclude_idx}_{timestamp}.npy', targets)
+        ########################################################################
         if len(targets) != len(all_predicts):
             raise RuntimeError("Predictions' len don't equal targets' len!")
 
+        # print("all_predicts shape:", all_predicts.shape)
+        # print("targets shape:", targets.shape)
+        # print("all_predicts:", all_predicts)
+        # print("targets:", targets)
+
         all_test_results = []
+
         for predicts, target in zip(all_predicts, targets):
+            #######################################################################
+            # make the predicts and target zero for the index i (removed channel index )
+            # dont make it zero if exclude_idx is -1
+            if exclude_idx != -1:
+                predicts[:,exclude_idx] = 0.0
+                target[:,exclude_idx] = 0.0
+            ########################################################################
             single_series_results = self.evaluator.evaluate(
                 target,
                 predicts,
@@ -344,6 +407,9 @@ class RollingForecast(ForecastingStrategy):
             )
             all_test_results.append(single_series_results)
         single_series_results = np.mean(np.stack(all_test_results), axis=0).tolist()
+
+        # print("2all_predicts:", all_predicts)
+        # print("2targets:", targets)
 
         average_inference_time = float(total_inference_time) / min(
             len(index_list), num_rollings
