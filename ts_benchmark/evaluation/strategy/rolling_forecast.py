@@ -204,12 +204,12 @@ class RollingForecast(ForecastingStrategy):
         print(f"Executing rolling forecast for series: {series_name}")
         model = model_factory()
         if model.batch_forecast.__annotations__.get("not_implemented_batch"):
-            print("eval sample if part")
+            # print("eval sample if part")
             return self._eval_sample(series, meta_info, model, series_name)
         else:
-            print("eval batch else part")
+            # print("eval batch else part")
             return self._eval_batch(series, meta_info, model, series_name)
- 
+
     def _eval_sample(
         self,
         series: pd.DataFrame,
@@ -336,6 +336,10 @@ class RollingForecast(ForecastingStrategy):
 
         eval_scaler = self._get_eval_scaler(train_valid_data, train_ratio_in_tv)
 
+        # save eval_scaler to file
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        np.save(f'{series_name}_scaler_{timestamp}.npy', np.array([eval_scaler.mean_,eval_scaler.var_]))
 
         index_list = self._get_index(train_length, test_length, horizon, stride)
         # printing train_length, test_length, horizon, stride
@@ -346,11 +350,20 @@ class RollingForecast(ForecastingStrategy):
         # print("roll index_list:", index_list)
         # print("num_rollings:", num_rollings)
         index_list = index_list[:num_rollings]
+        num_channels = series.shape[1]
+        batch_evals = []
+        for exclude_idx in range(-1, num_channels):
+            batch_evals.append(self.the_magic(series, model, series_name, horizon, num_rollings, train_valid_data, start_fit_time, end_fit_time, eval_scaler, index_list, exclude_idx, timestamp))
+        return batch_evals[0]
 
+        # return self.the_magic(series, model, series_name, horizon, num_rollings, train_valid_data, start_fit_time, end_fit_time, eval_scaler, index_list, exclude_idx)
+
+    def the_magic(self, series, model, series_name, horizon, num_rollings, train_valid_data, start_fit_time, end_fit_time, eval_scaler, index_list, exclude_idx, timestamp):
         batch_maker = RollingForecastEvalBatchMaker(
             series,
             index_list,
         )
+        
 
         all_predicts = []
         total_inference_time = 0
@@ -358,7 +371,7 @@ class RollingForecast(ForecastingStrategy):
         print("rolling forecast started")
         while predict_batch_maker.has_more_batches():
             start_inference_time = time.time()
-            predicts = model.batch_forecast(horizon, predict_batch_maker)
+            predicts = model.batch_forecast(horizon, predict_batch_maker,exclude_idx=exclude_idx)
             # print("predicts:", predicts)
             end_inference_time = time.time()
             total_inference_time += end_inference_time - start_inference_time
@@ -368,18 +381,17 @@ class RollingForecast(ForecastingStrategy):
 
         all_predicts = np.concatenate(all_predicts, axis=0)
         targets = batch_maker.make_batch_eval(horizon)["target"]
+        # print("all_predicts shape:", all_predicts.shape)
+        # print("targets shape:", targets.shape)
+        print("eval mean _ ", eval_scaler.mean_,"  eval var _  ", eval_scaler.var_)
         ########################################################################
-        exclude_idx = -1   #### also added by us  channel to be zeroed 
-        
         # Add timestamp to filename
-        import datetime
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         if exclude_idx == -1:
-            np.save(f'all_predicts_{series_name}_no_skipping_{timestamp}.npy', all_predicts) 
-            np.save(f'targets_{series_name}_no_skipping_{timestamp}.npy', targets)
+            np.save(f'{series_name}_no_skipping_all_predicts_{timestamp}.npy', all_predicts) 
+            np.save(f'{series_name}_no_skipping_targets_{timestamp}.npy', targets)
         else:
-            np.save(f'all_predicts_{series_name}_exclude_{exclude_idx}_{timestamp}.npy', all_predicts) 
-            np.save(f'targets_{series_name}_exclude_{exclude_idx}_{timestamp}.npy', targets)
+            np.save(f'{series_name}_exclude_{exclude_idx}_all_predicts_{timestamp}.npy', all_predicts) 
+            np.save(f'{series_name}_exclude_{exclude_idx}_targets_{timestamp}.npy', targets)
         ########################################################################
         if len(targets) != len(all_predicts):
             raise RuntimeError("Predictions' len don't equal targets' len!")

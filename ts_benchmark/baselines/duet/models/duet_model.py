@@ -62,8 +62,8 @@ class DUETModel(nn.Module):
             channel_mask = self.mask_generator(changed_input)
 
             if not self.already_printed:
-                print(f"Channel mask shape: {channel_mask.shape}")
-                print(f"Channel mask: {channel_mask}")
+                # print(f"Channel mask shape: {channel_mask.shape}")
+                # print(f"Channel mask: {channel_mask}")
                 # exit(0)
                 self.already_printed = True
 

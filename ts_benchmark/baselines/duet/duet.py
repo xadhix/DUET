@@ -415,75 +415,75 @@ class DUET(ModelBase):
             adjust_learning_rate(optimizer, epoch + 1, config)
 
         # Save the trained model
-        self._save_model()
+        # self._save_model()
         return self
 
-    def _save_model(self, save_path=None):
-        """
-        Save the trained DUET model with its state dict and configuration.
+    # def _save_model(self, save_path=None):
+    #     """
+    #     Save the trained DUET model with its state dict and configuration.
         
-        Args:
-            save_path: Optional custom path to save the model. If None, uses instance save_path or default.
+    #     Args:
+    #         save_path: Optional custom path to save the model. If None, uses instance save_path or default.
         
-        Returns:
-            str: Path where the model was saved
-        """
-        import os
-        import datetime
+    #     Returns:
+    #         str: Path where the model was saved
+    #     """
+    #     import os
+    #     import datetime
         
-        # Use the best checkpoint if available from early stopping
-        if hasattr(self, 'early_stopping') and self.early_stopping.check_point is not None:
-            # Load the best checkpoint first
-            self.model.load_state_dict(self.early_stopping.check_point)
-            print("Using best model from early stopping checkpoint")
+    #     # Use the best checkpoint if available from early stopping
+    #     if hasattr(self, 'early_stopping') and self.early_stopping.check_point is not None:
+    #         # Load the best checkpoint first
+    #         self.model.load_state_dict(self.early_stopping.check_point)
+    #         print("Using best model from early stopping checkpoint")
         
-        # Determine the output path - priority: parameter > instance attribute > default
-        if save_path is not None:
-            base_path = save_path
-        elif hasattr(self, 'save_path') and self.save_path is not None:
-            base_path = self.save_path
-        else:
-            base_path = "result"
+    #     # Determine the output path - priority: parameter > instance attribute > default
+    #     if save_path is not None:
+    #         base_path = save_path
+    #     elif hasattr(self, 'save_path') and self.save_path is not None:
+    #         base_path = self.save_path
+    #     else:
+    #         base_path = "result"
         
-        # Create timestamp for unique filename
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = os.path.join(base_path, f"duet_model_h{self.config.horizon}_{timestamp}.pth")
+    #     # Create timestamp for unique filename
+    #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    #     output_path = os.path.join(base_path, f"duet_model_h{self.config.horizon}_{timestamp}.pth")
         
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    #     # Create directory if it doesn't exist
+    #     os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
-        # Prepare the save dictionary with comprehensive information
-        save_dict = {
-            "model_state_dict": self.model.state_dict(),
-            "config": self.config.__dict__,
-            "scaler_mean": self.scaler.mean_ if hasattr(self.scaler, 'mean_') else None,
-            "scaler_scale": self.scaler.scale_ if hasattr(self.scaler, 'scale_') else None,
-            "model_class": self.model.__class__.__name__,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "horizon": self.config.horizon,
-            "seq_len": self.config.seq_len,
-        }
+    #     # Prepare the save dictionary with comprehensive information
+    #     save_dict = {
+    #         "model_state_dict": self.model.state_dict(),
+    #         "config": self.config.__dict__,
+    #         "scaler_mean": self.scaler.mean_ if hasattr(self.scaler, 'mean_') else None,
+    #         "scaler_scale": self.scaler.scale_ if hasattr(self.scaler, 'scale_') else None,
+    #         "model_class": self.model.__class__.__name__,
+    #         "timestamp": datetime.datetime.now().isoformat(),
+    #         "horizon": self.config.horizon,
+    #         "seq_len": self.config.seq_len,
+    #     }
         
-        # Save the model
-        torch.save(save_dict, output_path)
-        print(f"✓ Model saved successfully to: {output_path}")
-        return output_path
+    #     # Save the model
+    #     torch.save(save_dict, output_path)
+    #     print(f"✓ Model saved successfully to: {output_path}")
+    #     return output_path
 
-    def save_model(self, save_path=None):
-        """
-        Public method to manually save the model at any time.
+    # def save_model(self, save_path=None):
+    #     """
+    #     Public method to manually save the model at any time.
         
-        Args:
-            save_path: Optional custom path to save the model
+    #     Args:
+    #         save_path: Optional custom path to save the model
             
-        Returns:
-            str: Path where the model was saved
-        """
-        if self.model is None:
-            print("Error: No model to save. Train the model first using forecast_fit().")
-            return None
+    #     Returns:
+    #         str: Path where the model was saved
+    #     """
+    #     if self.model is None:
+    #         print("Error: No model to save. Train the model first using forecast_fit().")
+    #         return None
             
-        return self._save_model(save_path)
+    #     return self._save_model(save_path)
 
 
 
@@ -588,7 +588,7 @@ class DUET(ModelBase):
                 # print("test_data:", test_data_set)
 
     def batch_forecast(
-        self, horizon: int, batch_maker: BatchMaker, **kwargs
+        self, horizon: int, batch_maker: BatchMaker, exclude_idx: int, **kwargs
     ) -> np.ndarray:
         """
         Make predictions by batch.
@@ -612,10 +612,10 @@ class DUET(ModelBase):
 
         #----------------------------------------------
         # ----- Make 'OT' constant before normalizing -----
-        # channel_to_zero = 6  # OT is usually at index 6 in ETTh1 this index may vary based on the dataset and the channel that we want to set to zero
-        # print(f"[DEBUG] Setting channel {channel_to_zero} (OT) to constant zero in batch forecast.")
-        # input_np[:, :, channel_to_zero] = 0.0
-        # print("the batch forecast ", input_np)
+        if exclude_idx is not None and exclude_idx > -1:
+            print(f"[DEBUG] Setting channel {exclude_idx} (OT) to constant zero in batch forecast.")
+            input_np[:, :, exclude_idx] = 0.0
+            print("the batch forecast ", input_np)
         #----------------------------------------------
 
         # Store original input_np before normalization for potential return
