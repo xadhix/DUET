@@ -5,7 +5,7 @@ def find_and_load_npy_files():
     """
     Find all prediction-target pairs in the DUET directory and calculate channel-wise MSE.
     """
-    base_path = r"C:\Duet\DUET"
+    base_path = r"C:\Duet\DUET"  ### Change this to your DUET directory path ###
     
     # Find all .npy files
     all_files = [f for f in os.listdir(base_path) if f.endswith('.npy')]

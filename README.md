@@ -1,4 +1,10 @@
+Things that we added 
+- filepair.py to view the per channel mse table , change the file path accordingly
+- we have added methods to skip channels by modifying the code in duet.py , rolling_forecast
+- we have extracted the probability matrix , after the gumbel softmax.
 
+
+Orginal contents of Readme
 
 # <img src="figures/duet.png" alt="Image description" style="width:40px;height:30px;"> DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting
 
