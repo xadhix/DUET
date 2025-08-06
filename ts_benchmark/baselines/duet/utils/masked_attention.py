@@ -174,6 +174,9 @@ class Mahalanobis_mask(nn.Module):
         diag = identity_matrices.repeat(p.shape[0], 1, 1).to(p.device)
         p = (p1 + diag) * 0.99
 
+        # print(f"Mahalanobis_mask: p shape = {p.shape}, min = {p.min()}, max = {p.max()}")
+        # print("p:", p)
+        # exit(0)
         return p
 
     def bernoulli_gumbel_rsample(self, distribution_matrix):
@@ -193,10 +196,16 @@ class Mahalanobis_mask(nn.Module):
 
     def forward(self, X):
         p = self.calculate_prob_distance(X)
-
+        
         # bernoulli中两个通道有关系的概率
         sample = self.bernoulli_gumbel_rsample(p)
 
         mask = sample.unsqueeze(1)
         cnt = torch.sum(mask, dim=-1)
+
+        # print("mask shape:", mask.shape)
+        # print("mask:", mask)
+        # exit(0)
+        self.p = mask   #### added by us
+
         return mask

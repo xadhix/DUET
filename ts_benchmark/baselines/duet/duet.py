@@ -416,6 +416,65 @@ class DUET(ModelBase):
 
         # Save the trained model
         # self._save_model()
+
+        # ...existing code...##########################################################################
+
+        print("model probs :", len(self.model.probs))  # Print the channel mask probabilities
+
+        # Fix: Average across batch dimension to get [1, 7, 7] for all tensors
+        normalized_probs = []
+        
+        print("\n=== NORMALIZING ACROSS BATCH DIMENSION ===")
+        for i, p in enumerate(self.model.probs):
+            prob_tensor = p.cpu().detach()
+            # Take mean across batch dimension: [B, 1, 7, 7] -> [1, 7, 7]
+            batch_mean = torch.mean(prob_tensor, dim=0, keepdim=False)  # [1, 7, 7]
+            normalized_probs.append(batch_mean.numpy())
+            
+            # print(f"Prob {i}: {prob_tensor.shape} -> {batch_mean.shape}")
+        
+        # Now all tensors have shape [1, 7, 7]
+        probs_array = np.array(normalized_probs)  # Shape: [2112, 1, 7, 7]
+        print(f"\nNormalized array shape: {probs_array.shape}")
+        
+        # Calculate mean across all 2112 tensors to get a single [1, 7, 7] or [7, 7] matrix
+        mean_prob_matrix = np.mean(probs_array, axis=0)  # Shape: [1, 7, 7]
+        
+        # Remove the singleton dimension to get [7, 7]
+        mean_prob_matrix_2d = np.squeeze(mean_prob_matrix)  # Shape: [7, 7]
+        
+        print(f"\nMean probability matrix shape: {mean_prob_matrix_2d.shape}")
+        print("\nMean probability matrix [7x7]:")
+        print(mean_prob_matrix_2d)
+        
+        # Additional statistics
+        print(f"\nMatrix statistics:")
+        print(f"  Overall mean: {np.mean(mean_prob_matrix_2d):.6f}")
+        print(f"  Overall std: {np.std(mean_prob_matrix_2d):.6f}")
+        print(f"  Min value: {np.min(mean_prob_matrix_2d):.6f}")
+        print(f"  Max value: {np.max(mean_prob_matrix_2d):.6f}")
+        
+        # Show channel-wise statistics (assuming this represents channel interactions)
+        channel_names = ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL', 'OT']
+        print(f"\nChannel-wise row means:")
+        for i, ch_name in enumerate(channel_names):
+            row_mean = np.mean(mean_prob_matrix_2d[i, :])
+            print(f"  {ch_name}: {row_mean:.6f}")
+        
+        print(f"\nChannel-wise column means:")
+        for i, ch_name in enumerate(channel_names):
+            col_mean = np.mean(mean_prob_matrix_2d[:, i])
+            print(f"  {ch_name}: {col_mean:.6f}")
+        
+        # Calculate total sum
+        total_sum = np.sum(probs_array)
+        mean_matrix_sum = np.sum(mean_prob_matrix_2d)
+        print(f"\nTotal probability sum across all tensors: {total_sum:.6f}")
+        print(f"Mean matrix sum: {mean_matrix_sum:.6f}")
+
+        # exit(0)
+
+        #####################################
         return self
 
     # def _save_model(self, save_path=None):
@@ -615,7 +674,7 @@ class DUET(ModelBase):
         if exclude_idx is not None and exclude_idx > -1:
             print(f"[DEBUG] Setting channel {exclude_idx} (OT) to constant zero in batch forecast.")
             input_np[:, :, exclude_idx] = 0.0
-            print("the batch forecast ", input_np)
+            # print("the batch forecast ", input_np)
         #----------------------------------------------
 
         # Store original input_np before normalization for potential return
@@ -738,68 +797,68 @@ class DUET(ModelBase):
         ]
         return input_np, target_np, input_mark_np, target_mark_np
 
-    def load_model(self, model_path):
-        """
-        Load a saved DUET model from the specified path.
+    # def load_model(self, model_path):
+    #     """
+    #     Load a saved DUET model from the specified path.
         
-        Args:
-            model_path: Path to the saved model file
+    #     Args:
+    #         model_path: Path to the saved model file
             
-        Returns:
-            bool: True if model loaded successfully, False otherwise
-        """
-        try:
-            import torch
-            import os
+    #     Returns:
+    #         bool: True if model loaded successfully, False otherwise
+    #     """
+    #     try:
+    #         import torch
+    #         import os
             
-            if not os.path.exists(model_path):
-                print(f"Error: Model file not found at {model_path}")
-                return False
+    #         if not os.path.exists(model_path):
+    #             print(f"Error: Model file not found at {model_path}")
+    #             return False
             
-            print(f"Loading model from: {model_path}")
+    #         print(f"Loading model from: {model_path}")
             
-            # Load the checkpoint
-            checkpoint = torch.load(model_path, map_location='cpu')
+    #         # Load the checkpoint
+    #         checkpoint = torch.load(model_path, map_location='cpu')
             
-            # Update configuration from saved model
-            if 'config' in checkpoint:
-                saved_config = checkpoint['config']
-                for key, value in saved_config.items():
-                    if hasattr(self.config, key):
-                        setattr(self.config, key, value)
+    #         # Update configuration from saved model
+    #         if 'config' in checkpoint:
+    #             saved_config = checkpoint['config']
+    #             for key, value in saved_config.items():
+    #                 if hasattr(self.config, key):
+    #                     setattr(self.config, key, value)
             
-            # Initialize the model with the loaded configuration
-            from ts_benchmark.baselines.duet.models.duet_model import DUETModel
-            self.model = DUETModel(self.config)
+    #         # Initialize the model with the loaded configuration
+    #         from ts_benchmark.baselines.duet.models.duet_model import DUETModel
+    #         self.model = DUETModel(self.config)
             
-            # Load the model state dict
-            if 'model_state_dict' in checkpoint:
-                self.model.load_state_dict(checkpoint['model_state_dict'])
-            else:
-                print("Error: No model state dict found in checkpoint")
-                return False
+    #         # Load the model state dict
+    #         if 'model_state_dict' in checkpoint:
+    #             self.model.load_state_dict(checkpoint['model_state_dict'])
+    #         else:
+    #             print("Error: No model state dict found in checkpoint")
+    #             return False
             
-            # Load scaler parameters if available
-            if 'scaler_mean' in checkpoint and checkpoint['scaler_mean'] is not None:
-                self.scaler.mean_ = checkpoint['scaler_mean']
-            if 'scaler_scale' in checkpoint and checkpoint['scaler_scale'] is not None:
-                self.scaler.scale_ = checkpoint['scaler_scale']
-                self.scaler.var_ = checkpoint['scaler_scale'] ** 2  # variance = scale^2
+    #         # Load scaler parameters if available
+    #         if 'scaler_mean' in checkpoint and checkpoint['scaler_mean'] is not None:
+    #             self.scaler.mean_ = checkpoint['scaler_mean']
+    #         if 'scaler_scale' in checkpoint and checkpoint['scaler_scale'] is not None:
+    #             self.scaler.scale_ = checkpoint['scaler_scale']
+    #             self.scaler.var_ = checkpoint['scaler_scale'] ** 2  # variance = scale^2
             
-            # Initialize early stopping
-            if not hasattr(self, 'early_stopping'):
-                from ts_benchmark.baselines.duet.utils.tools import EarlyStopping
-                self.early_stopping = EarlyStopping(patience=self.config.patience)
+    #         # Initialize early stopping
+    #         if not hasattr(self, 'early_stopping'):
+    #             from ts_benchmark.baselines.duet.utils.tools import EarlyStopping
+    #             self.early_stopping = EarlyStopping(patience=self.config.patience)
             
-            print(f"✓ Model loaded successfully from: {model_path}")
-            print(f"Model timestamp: {checkpoint.get('timestamp', 'Unknown')}")
-            print(f"Model horizon: {checkpoint.get('horizon', 'Unknown')}")
-            print(f"Model seq_len: {checkpoint.get('seq_len', 'Unknown')}")
+    #         print(f"✓ Model loaded successfully from: {model_path}")
+    #         print(f"Model timestamp: {checkpoint.get('timestamp', 'Unknown')}")
+    #         print(f"Model horizon: {checkpoint.get('horizon', 'Unknown')}")
+    #         print(f"Model seq_len: {checkpoint.get('seq_len', 'Unknown')}")
             
-            return True
+    #         return True
             
-        except Exception as e:
-            print(f"Error loading model: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return False
+    #     except Exception as e:
+    #         print(f"Error loading model: {str(e)}")
+    #         import traceback
+    #         traceback.print_exc()
+    #         return False

@@ -352,8 +352,11 @@ class RollingForecast(ForecastingStrategy):
         index_list = index_list[:num_rollings]
         num_channels = series.shape[1]
         batch_evals = []
+        do_skip_channels = True
         for exclude_idx in range(-1, num_channels):
             batch_evals.append(self.the_magic(series, model, series_name, horizon, num_rollings, train_valid_data, start_fit_time, end_fit_time, eval_scaler, index_list, exclude_idx, timestamp))
+            if not do_skip_channels:
+                break
         return batch_evals[0]
 
         # return self.the_magic(series, model, series_name, horizon, num_rollings, train_valid_data, start_fit_time, end_fit_time, eval_scaler, index_list, exclude_idx)
@@ -383,7 +386,7 @@ class RollingForecast(ForecastingStrategy):
         targets = batch_maker.make_batch_eval(horizon)["target"]
         # print("all_predicts shape:", all_predicts.shape)
         # print("targets shape:", targets.shape)
-        print("eval mean _ ", eval_scaler.mean_,"  eval var _  ", eval_scaler.var_)
+        # print("eval mean _ ", eval_scaler.mean_,"  eval var _  ", eval_scaler.var_)
         ########################################################################
         # Add timestamp to filename
         if exclude_idx == -1:

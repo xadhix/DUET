@@ -1,44 +1,148 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import os
 
-# Replace 'seriesname' with your actual series name
-series_name = "ETTh1.csv"  # e.g., "ETTh1.csv"
+def find_and_load_npy_files():
+    """
+    Find all prediction-target pairs in the DUET directory and calculate channel-wise MSE.
+    """
+    base_path = r"C:\Duet\DUET"
+    
+    # Find all .npy files
+    all_files = [f for f in os.listdir(base_path) if f.endswith('.npy')]
+    
+    # Group prediction and target files
+    pairs = {}
+    for file in all_files:
+        if 'all_predicts_' in file:
+            key = file.replace('all_predicts_', '').replace('.npy', '')
+            if key not in pairs:
+                pairs[key] = {}
+            pairs[key]['predictions'] = os.path.join(base_path, file)
+        elif 'targets_' in file:
+            key = file.replace('targets_', '').replace('.npy', '')
+            if key not in pairs:
+                pairs[key] = {}
+            pairs[key]['targets'] = os.path.join(base_path, file)
+        elif 'scaler_' in file:
+            scaler = os.path.join(base_path, file)
+    
+    print(f"Found {len(all_files)} .npy files total")
+    print(f"Found {len(pairs)} prediction-target pairs")
+    
+    return pairs , scaler
 
-# Load the data
-# all_predicts = np.load(r'C:\Duet\DUET\all_predicts_ETTh2.csv_exclude_0_20250728_133126.npy')
-# targets = np.load(r'C:\Duet\DUET\targets_ETTh2.csv_exclude_0_20250728_133126.npy')
-scaler = np.load(r'C:\Duet\DUET\ETTh1.csv_scaler_20250730_165452.npy')
+def calculate_channel_wise_mse_table():
+    """
+    Calculate channel-wise MSE for all pairs and display as a table.
+    """
+    pairs, _ = find_and_load_npy_files()
 
-print("scaler mean:", scaler[0])
-print("scaler var:", scaler[1])
+    # ETTh2 channel names
+    channel_names = ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL', 'OT']
+    
+    # Store results
+    results = []
+    
+    print("\n" + "=" * 120)
+    print("LOADING AND ANALYZING ALL PAIRS")
+    print("=" * 120)
+    
+    for key, files in pairs.items():
+        if 'predictions' not in files or 'targets' not in files:
+            print(f"Skipping {key} - missing prediction or target file")
+            continue
+        
+        try:
+            # Load arrays
+            predictions = np.load(files['predictions'])
+            targets = np.load(files['targets'])
+            
+            print(f"\nLoaded {key}: Shape {predictions.shape}")
+            
+            # Calculate overall MSE
+            difference = predictions - targets
+            overall_mse = np.mean((difference) ** 2)
+            
+            # Calculate channel-wise MSE
+            if len(predictions.shape) == 3:
+                num_channels = predictions.shape[2]
+                channel_mses = []
+                
+                for ch in range(num_channels):
+                    ch_difference = predictions[:, :, ch] - targets[:, :, ch]
+                    ch_mse = np.mean((ch_difference) ** 2)
+                    print(f"Channel {ch} MSE: {ch_mse}")
+                    channel_mses.append(ch_mse)
+                
+                results.append({
+                    'name': key,
+                    'overall_mse': overall_mse,
+                    'channel_mses': channel_mses
+                })
+            else:
+                print(f"{key} is not 3D - skipping channel analysis")
+        
+        except Exception as e:
+            print(f"Error loading {key}: {e}")
+    
+    # Display results table in markdown format
+    if results:
+        print("\n" + "=" * 120)
+        print("CHANNEL-WISE MSE TABLE (MARKDOWN FORMAT)")
+        print("=" * 120)
+        
+        # Create markdown header
+        header_names = ['Pair Name', 'Overall MSE'] + channel_names[:len(results[0]['channel_mses'])]
+        markdown_header = "| " + " | ".join(f"{name:>10s}" for name in header_names) + " |"
+        markdown_separator = "|" + "|".join(":" + "-" * 10 + ":" for _ in header_names) + "|"
+        
+        print(markdown_header)
+        print(markdown_separator)
+        
+        # Print data rows in markdown format
+        for result in results:
+            row_data = [f"{result['name']:>10s}", f"{result['overall_mse']:>10.6f}"]
+            for ch_mse in result['channel_mses']:
+                row_data.append(f"{ch_mse:>10.6f}")
+            markdown_row = "| " + " | ".join(row_data) + " |"
+            print(markdown_row)
+        
+        # Calculate averages in markdown format
+        avg_overall = np.mean([r['overall_mse'] for r in results])
+        avg_data = [f"{'AVERAGE':>10s}", f"{avg_overall:>10.6f}"]
+        
+        num_channels = len(results[0]['channel_mses'])
+        for ch in range(num_channels):
+            ch_avg = np.mean([r['channel_mses'][ch] for r in results])
+            avg_data.append(f"{ch_avg:>10.6f}")
+        avg_markdown_row = "| " + " | ".join(avg_data) + " |"
+        print(avg_markdown_row)
+        
+        # Calculate standard deviations in markdown format
+        std_overall = np.std([r['overall_mse'] for r in results])
+        std_data = [f"{'STD DEV':>10s}", f"{std_overall:>10.6f}"]
+        
+        for ch in range(num_channels):
+            ch_std = np.std([r['channel_mses'][ch] for r in results])
+            std_data.append(f"{ch_std:>10.6f}")
+        std_markdown_row = "| " + " | ".join(std_data) + " |"
+        print(std_markdown_row)
+        
+        # Find best and worst channels overall in markdown format
+        print("\n## CHANNEL PERFORMANCE SUMMARY")
+        print("\n| Rank | Channel | Name | Average MSE |")
+        print("|:----:|:-------:|:----:|:-----------:|")
+        
+        channel_avgs = []
+        for ch in range(num_channels):
+            ch_avg = np.mean([r['channel_mses'][ch] for r in results])
+            channel_avgs.append((ch, channel_names[ch], ch_avg))
+        
+        # Sort by MSE
+        channel_avgs.sort(key=lambda x: x[2])
+        
+        for i, (ch_idx, ch_name, avg_mse) in enumerate(channel_avgs):
+            print(f"| {i+1:2d} | {ch_idx:7d} | {ch_name:4s} | {avg_mse:>10.6f} |")
 
-# print(f"Loaded data for {series_name}")
-# print(f"Predictions shape: {all_predicts.shape}")
-# print(f"Targets shape: {targets.shape}")
-
-# Access specific samples
-# first_prediction = all_predicts[0]  # First prediction
-# first_target = targets[0]          # First target
-
-# # Calculate metrics (example)
-# mse_overall = np.mean((all_predicts - targets) ** 2)
-# print(f"Overall Mean Squared Error: {mse_overall}")
-
-# # Calculate MSE for each channel separately
-# num_channels = all_predicts.shape[2]  # Assuming shape is (samples, time_steps, channels)
-# print(f"\nMSE for each channel (averaged across all samples and time steps):")
-# mse_per_channel = np.mean((all_predicts - targets) ** 2, axis=(0, 1))  # Average over samples and time steps
-# for channel, mse_val in enumerate(mse_per_channel):
-#     print(f"Channel {channel}: {mse_val:.6f}")
-
-
-
-# # Plot comparison (if you want to visualize)
-# plt.figure(figsize=(12, 6))
-# plt.subplot(1, 2, 1)
-# plt.plot(targets[0])  # First target sequence
-# plt.title('Target')
-# plt.subplot(1, 2, 2)
-# plt.plot(all_predicts[0])  # First prediction sequence
-# plt.title('Prediction')
-# plt.show()
+if __name__ == "__main__":
+    calculate_channel_wise_mse_table()

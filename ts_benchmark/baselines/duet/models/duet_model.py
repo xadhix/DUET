@@ -9,6 +9,7 @@ class DUETModel(nn.Module):
     def __init__(self, config, channel_names=None):
         super(DUETModel, self).__init__()
         self.already_printed = True
+        self.probs = []
         self.cluster = Linear_extractor_cluster(config)
         self.CI = config.CI
         self.n_vars = config.enc_in
@@ -61,6 +62,12 @@ class DUETModel(nn.Module):
             changed_input = rearrange(input, 'b l n -> b n l')
             channel_mask = self.mask_generator(changed_input)
 
+            # self.probs.append(channel_mask)  ### added by us
+            self.probs.append(self.mask_generator.p)
+            # if(len(self.probs)) == 2:
+            #     print("probs [0]: ", self.probs[0])
+            #     print("probs [1]: ", self.probs[1])
+            #     exit(0)
             if not self.already_printed:
                 # print(f"Channel mask shape: {channel_mask.shape}")
                 # print(f"Channel mask: {channel_mask}")
