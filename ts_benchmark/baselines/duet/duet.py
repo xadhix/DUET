@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
-import os
+
 from ts_benchmark.baselines.duet.utils.tools import EarlyStopping, adjust_learning_rate
 from ts_benchmark.utils.data_processing import split_before
 from typing import Type, Dict, Optional, Tuple
@@ -67,13 +67,12 @@ class TransformerConfig:
 
 
 class DUET(ModelBase):
-    def __init__(self, save_path=None, **kwargs):
+    def __init__(self, **kwargs):
         super(DUET, self).__init__()
         self.config = TransformerConfig(**kwargs)
         self.scaler = StandardScaler()
         self.seq_len = self.config.seq_len
         self.win_size = self.config.seq_len
-        self.save_path = save_path
 
     @property
     def model_name(self):
@@ -216,19 +215,12 @@ class DUET(ModelBase):
         self.model.train()
         return total_loss
 
-    def forecast_fit(self, train_valid_data: pd.DataFrame, train_ratio_in_tv: float, analyze_channels=True,
-                     plot=True, analysis_dir=None, save_path=None, **kwargs) -> "ModelBase":
-        if save_path is None:
-            save_path = self.save_path
+    def forecast_fit(self, train_valid_data: pd.DataFrame, train_ratio_in_tv: float) -> "ModelBase":
         """
         Train the model.
 
         :param train_data: Time data data used for training.
         :param train_ratio_in_tv: Represents the splitting ratio of the training set validation set. If it is equal to 1, it means that the validation set is not partitioned.
-        :param analyze_channels: If True, run Integrated Gradients attribution and correlation analysis after training.
-        :param plot: If True, save plots for attribution and correlation.
-        :param analysis_dir: Directory to save analysis results (plots, csv). If None, will be set based on save_path.
-        :param save_path: Base save path from config or CLI/sh file. Used to construct analysis_dir if provided.
         :return: The fitted model object.
         """
 
@@ -337,63 +329,13 @@ class DUET(ModelBase):
                     break
 
             adjust_learning_rate(optimizer, epoch + 1, config)
-        # Determine analysis_dir based on save_path and horizon
-        if analysis_dir is None:
-            base_path = save_path if save_path is not None else "result/forecast_fit/analysis_fit"
-            analysis_dir = os.path.join(base_path + f"/horizon{config.horizon}")
-        else:
-            curr_path = os.getcwd()
-            analysis_dir = os.path.abspath(os.path.join(curr_path, analysis_dir))
-        print(f"[DEBUG] Forecast Fit Function Analysis directory: {analysis_dir}")
-        # analysis_dir = curr_path+analysis_dir
-        output_path = f"result/model_h{str(config.horizon)}.pth"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        torch.save({
-            "model_state_dict": self.model.state_dict(),
-            "config": config.__dict__,
-        }, output_path)
 
-        # --- Channel analysis integration after training ---
-        if analyze_channels:
-            from ts_benchmark.baselines.duet.utils import channel_analysis
-            input_data = train_data.tail(config.seq_len)
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            attribution_vals = channel_analysis.explain_duet_channels(self, input_data, device=device)
-            # Use the model's own prediction on this window for correlation
-            self.model.eval()
-            with torch.no_grad():
-                input_tensor = torch.tensor(input_data.values, dtype=torch.float32).unsqueeze(0).to(device)
-                output, _ = self.model(input_tensor)
-                predictions = output.cpu().numpy().reshape(-1, input_data.shape[1])
-            corr_matrix = channel_analysis.channel_correlation(predictions, columns=input_data.columns)
-            if analysis_dir is not None:
-                os.makedirs(analysis_dir, exist_ok=True)
-                np.save(os.path.join(analysis_dir, 'channel_attributions.npy'), attribution_vals)
-                corr_matrix.to_csv(os.path.join(analysis_dir, 'channel_correlation.csv'))
-            if plot:
-                channel_analysis.plot_attribution_summary(attribution_vals, input_data, save_path=(os.path.join(analysis_dir, 'channel_attribution.png') if analysis_dir else None))
-                channel_analysis.plot_correlation_heatmap(corr_matrix, save_path=(os.path.join(analysis_dir, 'correlation_heatmap.png') if analysis_dir else None))
-
-                print(f"[INFO] Saved channel attribution to: {os.path.join(analysis_dir, 'channel_attribution.png')}")
-                print(f"[INFO] Saved correlation matrix to: {os.path.join(analysis_dir, 'correlation_heatmap.png')}")
-
-        # --- End channel analysis integration ---
-
-        return self
-
-    def forecast(self, horizon: int, train: pd.DataFrame, analyze_channels=True,
-                 plot=True, analysis_dir=None, save_path=None) -> np.ndarray:
-        if save_path is None:
-            save_path = self.save_path
+    def forecast(self, horizon: int, train: pd.DataFrame) -> np.ndarray:
         """
         Make predictions.
 
         :param horizon: The predicted length.
         :param testdata: Time data data used for prediction.
-        :param analyze_channels: If True, run Integrated Gradients attribution and correlation analysis after prediction.
-        :param plot: If True, save plots for attribution and correlation.
-        :param analysis_dir: Directory to save analysis results (plots, csv). If None, will be set based on save_path.
-        :param save_path: Base save path from config or CLI/sh file. Used to construct analysis_dir if provided.
         :return: An array of predicted results.
         """
         if self.early_stopping.check_point is not None:
@@ -449,28 +391,6 @@ class DUET(ModelBase):
                         answer[-horizon:] = self.scaler.inverse_transform(
                             answer[-horizon:]
                         )
-                    # Determine analysis_dir based on save_path and horizon
-                    if analysis_dir is None:
-                        base_path = save_path if save_path is not None else "result/forecast/analysis"
-                        analysis_dir = os.path.join(base_path + f"+horizon{config.horizon}")
-                    else:
-                        curr_path = os.getcwd()
-                        analysis_dir = os.path.abspath(os.path.join(curr_path, analysis_dir))
-                    # --- Channel analysis integration ---
-                    if analyze_channels:
-                        from ts_benchmark.baselines.duet.utils import channel_analysis
-                        # Use the last input window for attribution (test.tail(seq_len))
-                        input_data = test.tail(config.seq_len)
-                        attribution_vals = channel_analysis.explain_duet_channels(self, input_data, device=device)
-                        corr_matrix = channel_analysis.channel_correlation(answer[-horizon:], columns=input_data.columns)
-                        if analysis_dir is not None:
-                            os.makedirs(analysis_dir, exist_ok=True)
-                            np.save(os.path.join(analysis_dir, 'channel_attributions.npy'), attribution_vals)
-                            corr_matrix.to_csv(os.path.join(analysis_dir, 'channel_correlation.csv'))
-                        if plot:
-                            channel_analysis.plot_attribution_summary(attribution_vals, input_data, save_path=(os.path.join(analysis_dir, 'channel_attribution.png') if analysis_dir else None))
-                            channel_analysis.plot_correlation_heatmap(corr_matrix, save_path=(os.path.join(analysis_dir, 'correlation_heatmap.png') if analysis_dir else None))
-                    # --- End channel analysis integration ---
                     return answer[-horizon:]
 
                 output = output.cpu().numpy()[:, -config.horizon:, :]
@@ -490,19 +410,13 @@ class DUET(ModelBase):
                 )
 
     def batch_forecast(
-        self, horizon: int, batch_maker: BatchMaker, analyze_channels=False, plot=False, analysis_dir=None, save_path=None, **kwargs
+        self, horizon: int, batch_maker: BatchMaker, **kwargs
     ) -> np.ndarray:
-        if save_path is None:
-            save_path = self.save_path
         """
         Make predictions by batch.
 
         :param horizon: The length of each prediction.
         :param batch_maker: Make batch data used for prediction.
-        :param analyze_channels: If True, run Integrated Gradients attribution and correlation analysis after prediction.
-        :param plot: If True, save plots for attribution and correlation.
-        :param analysis_dir: Directory to save analysis results (plots, csv). If None, will be set based on save_path.
-        :param save_path: Base save path from config or CLI/sh file. Used to construct analysis_dir if provided.
         :return: An array of predicted results.
         """
         if self.early_stopping.check_point is not None:
@@ -535,28 +449,6 @@ class DUET(ModelBase):
             answers = self.scaler.inverse_transform(flattened_data).reshape(
                 answers.shape
             )
-        # Determine analysis_dir based on save_path and horizon
-        if analysis_dir is None:
-            base_path = save_path if save_path is not None else "result/analysis"
-            analysis_dir = os.path.join(base_path + f"+horizon{self.config.horizon}")
-        curr_path = os.getcwd()
-        analysis_dir = os.path.abspath(os.path.join(curr_path, analysis_dir))
-        print(f"[DEBUG] Batch Forecast Function Analysis directory: {analysis_dir}")
-        # --- Channel analysis integration ---
-        if analyze_channels:
-            from ts_benchmark.baselines.duet.utils import channel_analysis
-            # Use the first batch input for attribution (as DataFrame)
-            input_df = pd.DataFrame(input_np[0], columns=getattr(batch_maker, 'columns', None))
-            attribution_vals = channel_analysis.explain_duet_channels(self, input_df, device=device)
-            corr_matrix = channel_analysis.channel_correlation(answers[0, -horizon:, :], columns=input_df.columns)
-            if analysis_dir is not None:
-                os.makedirs(analysis_dir, exist_ok=True)
-                np.save(os.path.join(analysis_dir, 'channel_attributions.npy'), attribution_vals)
-                corr_matrix.to_csv(os.path.join(analysis_dir, 'channel_correlation.csv'))
-            if plot:
-                channel_analysis.plot_attribution_summary(attribution_vals, input_df, save_path=(os.path.join(analysis_dir, 'channel_attribution.png') if analysis_dir else None))
-                channel_analysis.plot_correlation_heatmap(corr_matrix, save_path=(os.path.join(analysis_dir, 'correlation_heatmap.png') if analysis_dir else None))
-        # --- End channel analysis integration ---
 
         return answers
 

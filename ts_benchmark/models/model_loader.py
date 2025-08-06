@@ -158,7 +158,6 @@ class ModelFactory:
         model_name: str,
         model_factory: Callable,
         model_hyper_params: dict,
-        save_path: str = None,
     ):
         """
         Initialize the ModelFactory object.
@@ -166,12 +165,10 @@ class ModelFactory:
         :param model_name: Model name.
         :param model_factory: A model factory (classes or factory functions) used to create model instances.
         :param model_hyper_params: The hyperparameter dictionary used to instantiate the model instance.
-        :param save_path: The save path for analysis artifacts and results.
         """
         self.model_name = model_name
         self.model_factory = model_factory
         self.model_hyper_params = model_hyper_params
-        self.save_path = save_path
 
     def __call__(self) -> Any:
         """
@@ -179,8 +176,7 @@ class ModelFactory:
 
         :return: A model instance that is compatible with the :class:`ModelBase` interface.
         """
-        # Pass save_path to the model if it accepts it
-        return self.model_factory(**self.model_hyper_params, save_path=self.save_path)
+        return self.model_factory(**self.model_hyper_params)
 
 
 def get_models(all_model_config: Dict) -> List[ModelFactory]:
@@ -230,8 +226,7 @@ def get_models(all_model_config: Dict) -> List[ModelFactory]:
             model_config,
         )
         # Add Model Factory to List
-        save_path = all_model_config.get("save_path", None)
         model_factory_list.append(
-            ModelFactory(model_name, model_factory, model_hyper_params, save_path=save_path)
+            ModelFactory(model_name, model_factory, model_hyper_params)
         )
     return model_factory_list
