@@ -24,7 +24,7 @@ class ForecastingStrategy(Strategy, metaclass=abc.ABCMeta):
         "deterministic"
     ]
 
-    def execute(self, series_name: str, model_factory: ModelFactory, save_path: Optional[str] = None) -> Any:
+    def execute(self, series_name: str, model_factory: ModelFactory) -> Any:
         """
         The primary interface to execute a forecasting strategy
 
@@ -52,7 +52,7 @@ class ForecastingStrategy(Strategy, metaclass=abc.ABCMeta):
 
         try:
             single_series_results = self._execute( # This is where the actual execution happens, Fixed Forecast or Rolling Forecast
-                data, meta_info, model_factory, series_name , save_path = save_path
+                data, meta_info, model_factory, series_name
             )
         except Exception as e:
             log = f"{traceback.format_exc()}\n{e}"
@@ -69,7 +69,6 @@ class ForecastingStrategy(Strategy, metaclass=abc.ABCMeta):
         meta_info: Optional[pd.Series],
         model_factory: ModelFactory,
         series_name: str,
-        save_path: Optional[str] = None,
     ) -> Any:
         """
         The execution pipeline of forecasting tasks

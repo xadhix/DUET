@@ -541,6 +541,7 @@ class DUET(ModelBase):
             analysis_dir = os.path.join(base_path + f"+horizon{self.config.horizon}")
         curr_path = os.getcwd()
         analysis_dir = os.path.abspath(os.path.join(curr_path, analysis_dir))
+        print(f"[DEBUG] Batch Forecast Function Analysis directory: {analysis_dir}")
         # --- Channel analysis integration ---
         if analyze_channels:
             from ts_benchmark.baselines.duet.utils import channel_analysis
