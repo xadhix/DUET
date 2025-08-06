@@ -56,7 +56,6 @@ class FixedForecast(ForecastingStrategy):
         )
 
         data_len = int(self._get_meta_info(meta_info, "length", len(series)))
-        # print(f"Data length: {data_len}, Horizon: {horizon}")
         train_length = data_len - horizon
         if train_length <= 0:
             raise ValueError("The prediction step exceeds the data length")

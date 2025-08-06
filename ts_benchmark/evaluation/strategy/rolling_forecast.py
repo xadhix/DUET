@@ -318,11 +318,6 @@ class RollingForecast(ForecastingStrategy):
         train_length, test_length = self._get_split_lens(series, meta_info, tv_ratio)
         train_valid_data, test_data = split_before(series, train_length)
 
-
-
-
-        
-
         ###############################################
         # print("series:", series)
         # print("train_valid_data:", train_valid_data)
@@ -371,16 +366,16 @@ class RollingForecast(ForecastingStrategy):
         all_predicts = []
         total_inference_time = 0
         predict_batch_maker = RollingForecastPredictBatchMaker(batch_maker)
-        print("rolling forecast started")
+        # print("rolling forecast started")
         while predict_batch_maker.has_more_batches():
             start_inference_time = time.time()
-            predicts = model.batch_forecast(horizon, predict_batch_maker,exclude_idx=exclude_idx)
+            predicts = model.batch_forecast(horizon, predict_batch_maker, exclude_idx=exclude_idx)
             # print("predicts:", predicts)
             end_inference_time = time.time()
             total_inference_time += end_inference_time - start_inference_time
             all_predicts.append(predicts)
         
-        print("rolling forecast finished")
+        # print("rolling forecast finished")
 
         all_predicts = np.concatenate(all_predicts, axis=0)
         targets = batch_maker.make_batch_eval(horizon)["target"]

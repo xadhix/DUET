@@ -67,13 +67,12 @@ class TransformerConfig:
 
 
 class DUET(ModelBase):
-    def __init__(self, save_path=None, **kwargs):
+    def __init__(self, **kwargs):
         super(DUET, self).__init__()
         self.config = TransformerConfig(**kwargs)
         self.scaler = StandardScaler()
         self.seq_len = self.config.seq_len
         self.win_size = self.config.seq_len
-        self.save_path = save_path
 
     @property
     def model_name(self):
@@ -414,10 +413,6 @@ class DUET(ModelBase):
 
             adjust_learning_rate(optimizer, epoch + 1, config)
 
-        # Save the trained model
-        # self._save_model()
-
-        # ...existing code...##########################################################################
 
         print("model probs :", len(self.model.probs))  # Print the channel mask probabilities
 
@@ -446,107 +441,12 @@ class DUET(ModelBase):
         print(f"\nMean probability matrix shape: {mean_prob_matrix_2d.shape}")
         print("\nMean probability matrix [7x7]:")
         print(mean_prob_matrix_2d)
-        
-        # Additional statistics
-        print(f"\nMatrix statistics:")
-        print(f"  Overall mean: {np.mean(mean_prob_matrix_2d):.6f}")
-        print(f"  Overall std: {np.std(mean_prob_matrix_2d):.6f}")
-        print(f"  Min value: {np.min(mean_prob_matrix_2d):.6f}")
-        print(f"  Max value: {np.max(mean_prob_matrix_2d):.6f}")
-        
-        # Show channel-wise statistics (assuming this represents channel interactions)
-        channel_names = ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL', 'OT']
-        print(f"\nChannel-wise row means:")
-        for i, ch_name in enumerate(channel_names):
-            row_mean = np.mean(mean_prob_matrix_2d[i, :])
-            print(f"  {ch_name}: {row_mean:.6f}")
-        
-        print(f"\nChannel-wise column means:")
-        for i, ch_name in enumerate(channel_names):
-            col_mean = np.mean(mean_prob_matrix_2d[:, i])
-            print(f"  {ch_name}: {col_mean:.6f}")
-        
-        # Calculate total sum
-        total_sum = np.sum(probs_array)
-        mean_matrix_sum = np.sum(mean_prob_matrix_2d)
-        print(f"\nTotal probability sum across all tensors: {total_sum:.6f}")
-        print(f"Mean matrix sum: {mean_matrix_sum:.6f}")
-
-        # exit(0)
 
         #####################################
-        return self
-
-    # def _save_model(self, save_path=None):
-    #     """
-    #     Save the trained DUET model with its state dict and configuration.
-        
-    #     Args:
-    #         save_path: Optional custom path to save the model. If None, uses instance save_path or default.
-        
-    #     Returns:
-    #         str: Path where the model was saved
-    #     """
-    #     import os
-    #     import datetime
-        
-    #     # Use the best checkpoint if available from early stopping
-    #     if hasattr(self, 'early_stopping') and self.early_stopping.check_point is not None:
-    #         # Load the best checkpoint first
-    #         self.model.load_state_dict(self.early_stopping.check_point)
-    #         print("Using best model from early stopping checkpoint")
-        
-    #     # Determine the output path - priority: parameter > instance attribute > default
-    #     if save_path is not None:
-    #         base_path = save_path
-    #     elif hasattr(self, 'save_path') and self.save_path is not None:
-    #         base_path = self.save_path
-    #     else:
-    #         base_path = "result"
-        
-    #     # Create timestamp for unique filename
-    #     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    #     output_path = os.path.join(base_path, f"duet_model_h{self.config.horizon}_{timestamp}.pth")
-        
-    #     # Create directory if it doesn't exist
-    #     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        
-    #     # Prepare the save dictionary with comprehensive information
-    #     save_dict = {
-    #         "model_state_dict": self.model.state_dict(),
-    #         "config": self.config.__dict__,
-    #         "scaler_mean": self.scaler.mean_ if hasattr(self.scaler, 'mean_') else None,
-    #         "scaler_scale": self.scaler.scale_ if hasattr(self.scaler, 'scale_') else None,
-    #         "model_class": self.model.__class__.__name__,
-    #         "timestamp": datetime.datetime.now().isoformat(),
-    #         "horizon": self.config.horizon,
-    #         "seq_len": self.config.seq_len,
-    #     }
-        
-    #     # Save the model
-    #     torch.save(save_dict, output_path)
-    #     print(f"✓ Model saved successfully to: {output_path}")
-    #     return output_path
-
-    # def save_model(self, save_path=None):
-    #     """
-    #     Public method to manually save the model at any time.
-        
-    #     Args:
-    #         save_path: Optional custom path to save the model
-            
-    #     Returns:
-    #         str: Path where the model was saved
-    #     """
-    #     if self.model is None:
-    #         print("Error: No model to save. Train the model first using forecast_fit().")
-    #         return None
-            
-    #     return self._save_model(save_path)
-
 
 
     def forecast(self, horizon: int, train: pd.DataFrame) -> np.ndarray:
+        print("Forecasting............................")
         """
         Make predictions.
 
@@ -556,19 +456,6 @@ class DUET(ModelBase):
         """
         if self.early_stopping.check_point is not None:
             self.model.load_state_dict(self.early_stopping.check_point)
-
-        
-        #---------------------------------------------
-        # ----- Make 'OT' constant before normalizing -----
-        # channel_names = train.columns.tolist()
-        # channel_to_zero = "HUFL"
-        # channel_idx = channel_names.index(channel_to_zero)
-
-        # print(f"[DEBUG] Setting '{channel_to_zero}' (index {channel_idx}) to constant zero for forecasting.")
-        
-        # train.iloc[:, channel_idx] = 0.0
-
-        #----------------------------------------------
 
         if self.config.norm:
             train = pd.DataFrame(
@@ -590,14 +477,9 @@ class DUET(ModelBase):
             test, config, timeenc=1, batch_size=1, shuffle=False, drop_last=False
         )
 
-        # print("test_data_loader:", test_data_loader)
-        # print("test_data:", test_data_set)
-
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(device)
-        # print("forecast eval started")
         self.model.eval()
-        # print("forecast eval finished")
 
         with torch.no_grad():
             answer = None
@@ -609,8 +491,7 @@ class DUET(ModelBase):
                         input_mark.to(device),
                         target_mark.to(device),
                     )
-                    # self.model.already_printed = False  # Reset the already_printed flag for each epoch
-                    # print("forecast in use ")
+
                     output, _ = self.model(input)
 
                 column_num = output.shape[-1]
@@ -643,8 +524,6 @@ class DUET(ModelBase):
                     shuffle=False,
                     drop_last=False,
                 )
-                # print("test_data_loader:", test_data_loader)
-                # print("test_data:", test_data_set)
 
     def batch_forecast(
         self, horizon: int, batch_maker: BatchMaker, exclude_idx: int, **kwargs
@@ -672,7 +551,7 @@ class DUET(ModelBase):
         #----------------------------------------------
         # ----- Make 'OT' constant before normalizing -----
         if exclude_idx is not None and exclude_idx > -1:
-            print(f"[DEBUG] Setting channel {exclude_idx} (OT) to constant zero in batch forecast.")
+            # print(f"[DEBUG] Setting channel {exclude_idx} (OT) to constant zero in batch forecast.")
             input_np[:, :, exclude_idx] = 0.0
             # print("the batch forecast ", input_np)
         #----------------------------------------------
@@ -731,7 +610,7 @@ class DUET(ModelBase):
                     torch.tensor(target_mark_np, dtype=torch.float32).to(device),
                 )
                 
-                self.model.already_printed = False  # Reset the already_printed flag for each epoch
+                # self.model.already_printed = False  # Reset the already_printed flag for each epoch
                 output, _ , = self.model(input)
                 column_num = output.shape[-1]
                 real_batch_size = output.shape[0]
@@ -796,69 +675,3 @@ class DUET(ModelBase):
             :,
         ]
         return input_np, target_np, input_mark_np, target_mark_np
-
-    # def load_model(self, model_path):
-    #     """
-    #     Load a saved DUET model from the specified path.
-        
-    #     Args:
-    #         model_path: Path to the saved model file
-            
-    #     Returns:
-    #         bool: True if model loaded successfully, False otherwise
-    #     """
-    #     try:
-    #         import torch
-    #         import os
-            
-    #         if not os.path.exists(model_path):
-    #             print(f"Error: Model file not found at {model_path}")
-    #             return False
-            
-    #         print(f"Loading model from: {model_path}")
-            
-    #         # Load the checkpoint
-    #         checkpoint = torch.load(model_path, map_location='cpu')
-            
-    #         # Update configuration from saved model
-    #         if 'config' in checkpoint:
-    #             saved_config = checkpoint['config']
-    #             for key, value in saved_config.items():
-    #                 if hasattr(self.config, key):
-    #                     setattr(self.config, key, value)
-            
-    #         # Initialize the model with the loaded configuration
-    #         from ts_benchmark.baselines.duet.models.duet_model import DUETModel
-    #         self.model = DUETModel(self.config)
-            
-    #         # Load the model state dict
-    #         if 'model_state_dict' in checkpoint:
-    #             self.model.load_state_dict(checkpoint['model_state_dict'])
-    #         else:
-    #             print("Error: No model state dict found in checkpoint")
-    #             return False
-            
-    #         # Load scaler parameters if available
-    #         if 'scaler_mean' in checkpoint and checkpoint['scaler_mean'] is not None:
-    #             self.scaler.mean_ = checkpoint['scaler_mean']
-    #         if 'scaler_scale' in checkpoint and checkpoint['scaler_scale'] is not None:
-    #             self.scaler.scale_ = checkpoint['scaler_scale']
-    #             self.scaler.var_ = checkpoint['scaler_scale'] ** 2  # variance = scale^2
-            
-    #         # Initialize early stopping
-    #         if not hasattr(self, 'early_stopping'):
-    #             from ts_benchmark.baselines.duet.utils.tools import EarlyStopping
-    #             self.early_stopping = EarlyStopping(patience=self.config.patience)
-            
-    #         print(f"✓ Model loaded successfully from: {model_path}")
-    #         print(f"Model timestamp: {checkpoint.get('timestamp', 'Unknown')}")
-    #         print(f"Model horizon: {checkpoint.get('horizon', 'Unknown')}")
-    #         print(f"Model seq_len: {checkpoint.get('seq_len', 'Unknown')}")
-            
-    #         return True
-            
-    #     except Exception as e:
-    #         print(f"Error loading model: {str(e)}")
-    #         import traceback
-    #         traceback.print_exc()
-    #         return False

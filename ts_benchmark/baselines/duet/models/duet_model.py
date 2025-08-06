@@ -8,7 +8,7 @@ import torch
 class DUETModel(nn.Module):
     def __init__(self, config, channel_names=None):
         super(DUETModel, self).__init__()
-        self.already_printed = True
+    	# self.already_printed = True
         self.probs = []
         self.cluster = Linear_extractor_cluster(config)
         self.CI = config.CI
@@ -68,11 +68,11 @@ class DUETModel(nn.Module):
             #     print("probs [0]: ", self.probs[0])
             #     print("probs [1]: ", self.probs[1])
             #     exit(0)
-            if not self.already_printed:
+            # if not self.already_printed:
                 # print(f"Channel mask shape: {channel_mask.shape}")
                 # print(f"Channel mask: {channel_mask}")
                 # exit(0)
-                self.already_printed = True
+               	# self.already_printed = True
 
             channel_group_feature, attention = self.Channel_transformer(x=temporal_feature, attn_mask=channel_mask)
 

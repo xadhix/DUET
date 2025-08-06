@@ -1,0 +1,410 @@
+commit 4a69db47f563529ae3000844cc7ea51ff92eb1cd
+Author: evinjbobby <evinbobby@gmail.com>
+Date:   Wed Aug 6 11:48:20 2025 +0200
+
+    small change
+
+commit 89db0f924fe9caee09b7f5648727909341ab0869
+Author: evinjbobby <evinbobby@gmail.com>
+Date:   Wed Aug 6 11:38:49 2025 +0200
+
+    final_commit
+
+commit 5d543ab49db02ab171f62ad9d3508273135b9956
+Author: evinjbobby <evinbobby@gmail.com>
+Date:   Wed Jul 30 18:58:21 2025 +0200
+
+    approx shapley done
+
+commit 715565025b855d6e8252463b05ac96ec2241d5bc
+Author: evinjbobby <evinbobby@gmail.com>
+Date:   Sun Jul 27 22:29:56 2025 +0200
+
+    god_save_us
+
+commit 3633113ee5f3034336dceecc5984955366e4bea3
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat May 10 21:19:37 2025 +0800
+
+    Update README.md
+
+commit 74c544932a1868fcf23b379e3d960d35da92f59a
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Apr 19 09:49:54 2025 +0800
+
+    Update README.md
+
+commit 0fdcd382bf967bba6c3e2260d9a31b2a222995fe
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Apr 19 09:48:46 2025 +0800
+
+    Update README.md
+
+commit 9e488300a4c04bd21a43749f1ef87569b8b43c4c
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Apr 9 13:20:51 2025 +0800
+
+    Update README.md
+
+commit 69598f4b7c3e9d9ccd6df3bdc81fd550979b91c1
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Apr 9 13:20:15 2025 +0800
+
+    Update README.md
+
+commit 0428c4c5ca90ec8beae7442e15ba24158639adf9
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:34:45 2025 +0800
+
+    Update README.md
+
+commit 57c57546ae535688b4d60544bb6b2421b24babeb
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:30:45 2025 +0800
+
+    Update README.md
+
+commit 00055b634115e4f6dcf82542da11fa09e1bde9c6
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:29:11 2025 +0800
+
+    Update README.md
+
+commit fff0cd85c0e90737693eb864ee0a1f3524bd14c7
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:28:45 2025 +0800
+
+    Update README.md
+
+commit ed0401d9cbf941f4a149a9d5117141012456205f
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:25:16 2025 +0800
+
+    Update README.md
+
+commit 1d783f0e1d8a675b1a01f2d0625638d5f83e914c
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:24:10 2025 +0800
+
+    Update README.md
+
+commit 82be0a3fb8e779e7d6440bcfa2d1cfc515b46507
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Apr 7 11:22:40 2025 +0800
+
+    Update README.md
+
+commit 3c36583e6b7365c61feb7ba5055cdbea3ba2eb40
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Apr 7 11:21:09 2025 +0800
+
+    add results
+
+commit 6f128b7090a2aa1615581ecbc3cf104a335babbb
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Apr 7 11:20:23 2025 +0800
+
+    modify readme
+
+commit e78f785482576e8ffacdd6d02a745b4ac8a43140
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Apr 7 11:14:52 2025 +0800
+
+    add results
+
+commit 7c6c78531a010047cd355de87fcf2a409414df5d
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Apr 7 10:33:45 2025 +0800
+
+    add DUET_unified_seq_len_96.sh
+
+commit 0170b1e879da81f8201e48b75cf2715136f186fc
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Apr 7 10:33:04 2025 +0800
+
+    add DUET_unified_seq_len_96.sh
+
+commit 2f88c283033704c63fcd04159f8cc298a38a6f05
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Feb 26 22:09:21 2025 +0800
+
+    Update model_loader.py
+
+commit 75cd5f730a838980135e635fd861295557f303c6
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Feb 26 12:36:36 2025 +0800
+
+    Update README.md
+
+commit f36c623fb1e1589c7f4e441587e87e66833b7278
+Merge: 9d6aaed 65d0781
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sun Feb 23 17:21:50 2025 +0800
+
+    Merge pull request #9 from gintmr/main
+    
+    Add an except block when loading the model to facilitate debugging.
+
+commit 65d0781facc82a4d1a171f62bc96039a934f7710
+Author: gintmr <148303202+gintmr@users.noreply.github.com>
+Date:   Sun Feb 23 17:13:25 2025 +0800
+
+    Update model_loader.py
+
+commit 25beff419f9b38ddcedf9ffaeb147393b8c46f4a
+Author: gintmr <148303202+gintmr@users.noreply.github.com>
+Date:   Sun Feb 23 17:12:12 2025 +0800
+
+    Update model_loader.py
+
+commit 9d6aaed92725bdc7d57bbd799cfc239b00292b82
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Feb 19 15:46:04 2025 +0800
+
+    Update README.md
+
+commit 6d0502fec029ea84183de625b9d709b7454ed454
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Fri Jan 10 16:18:48 2025 +0800
+
+    modify results
+
+commit ee6cc432966e1e7b63d56f78f7eee47f04664b14
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Fri Jan 10 14:25:28 2025 +0800
+
+    modify scripts
+
+commit af69578a9005a86c39c83a3a649dfe1d0640fd0a
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Fri Jan 10 13:51:12 2025 +0800
+
+    resolve a bug
+
+commit 296e3cd1eaf8092eeaa2aa83fca4373352407ac2
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Fri Jan 10 13:50:16 2025 +0800
+
+    modify linear_extractor_cluster
+
+commit b28f3d22d50896e2ab8fb7d78105213a9d81549f
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Jan 9 23:05:46 2025 +0800
+
+    Update README.md
+
+commit be707cbf26c8506b9ac4cf8c79b1525dcc97a6a2
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Jan 6 22:49:12 2025 +0800
+
+    Update README.md
+
+commit f8ccaa63cc0c63f1d7979d2873bd97c71e1c0cc8
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Mon Jan 6 22:48:47 2025 +0800
+
+    Update README.md
+
+commit 8811995100d4433e50c80f727a6e788e15f71ee6
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Jan 4 17:03:31 2025 +0800
+
+    Update README.md
+
+commit 522f365d5eb5befce867c705d9afda864fe1643c
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Jan 4 16:51:47 2025 +0800
+
+    Update README.md
+
+commit 099bde23d3137b2c5e550873651465bcaa334f94
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Dec 23 10:34:46 2024 +0800
+
+    modify results
+
+commit 72d6b4b46842df48d62542a4470a6862544f1b36
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Dec 23 10:32:27 2024 +0800
+
+    modify results
+
+commit 5eeaf64d9f009c465b9db9e69812759fdd5b987b
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 19:51:21 2024 +0800
+
+    Update README.md
+
+commit c3f023707911fe3a1526e8260fa6c8bf37b5a441
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:16:54 2024 +0800
+
+    Update README.md
+
+commit bf90749850a39a86bd5f97c63bb995d3937f9a4a
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:16:43 2024 +0800
+
+    Update README.md
+
+commit 165af552666ee3a075bfb5d34cbef9e321bda896
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:15:17 2024 +0800
+
+    Update README.md
+
+commit e84199ee986aa0a7d51bd79cf558229e6969e04d
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:14:58 2024 +0800
+
+    Update README.md
+
+commit d3a69f8b4570d17ceb9f7d39a0a0373b0e6fab88
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:14:37 2024 +0800
+
+    Update README.md
+
+commit fe7e58859989e8b7745bd66f44cfa3c9b665bf20
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 12:12:55 2024 +0800
+
+    Update README.md
+
+commit 09365cdccab60106f0a6200c09c4785515a25699
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 11:09:35 2024 +0800
+
+    Update README.md
+
+commit c369dbfb6d99daa9ab835871535bf02e4753c442
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 19 11:09:10 2024 +0800
+
+    Update README.md
+
+commit 70ba481b776325faec749f3f6862fb100b80ee0a
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:43:57 2024 +0800
+
+    Update README.md
+
+commit 6b2e06605af04e56396ba86e9c9ef94183988739
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:41:00 2024 +0800
+
+    Update README.md
+
+commit 22de97c6b45b37832ac62d7c0c094af349bf8be7
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:40:50 2024 +0800
+
+    Update README.md
+
+commit b090b242df313d0f1aced2a30404dda657b1c6a7
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:38:24 2024 +0800
+
+    Update README.md
+
+commit 99b1c1fb0cd3c25eb495da69196ac1ec93c2aef4
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:37:43 2024 +0800
+
+    Update README.md
+
+commit de96925913ebd97f0ca02d2f3ec23e9c9836ae6c
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 16:36:58 2024 +0800
+
+    Update README.md
+
+commit 134f6473bb86474768a2e10b8ad8c2e7fab9d074
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Wed Dec 18 16:20:11 2024 +0800
+
+    modify readme
+
+commit 98ca811bd7f3e5d22e4cdfb70d862c0a866a3256
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 10:57:27 2024 +0800
+
+    Update README.md
+
+commit 50eca58db9afffb3147b185c3517efb875979cb1
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 10:56:54 2024 +0800
+
+    Update README.md
+
+commit 06dd7adb4ef9027fcab4383cf2180bc889caf97f
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Wed Dec 18 10:55:56 2024 +0800
+
+    Update README.md
+
+commit c6875f850441ca6d0a68c7883f7b0413e95d9bf0
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Tue Dec 17 09:59:45 2024 +0800
+
+    Update README.md
+
+commit 269cd1150ed7f894ecd9939bc8811805ed939bec
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Tue Dec 17 09:55:33 2024 +0800
+
+    Update README.md
+
+commit 4e8d657e9db54a3153dbc789d6b05d9a97cc64bb
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Tue Dec 17 09:50:34 2024 +0800
+
+    Update README.md
+
+commit f44e337f02081018ebbcf4c50b62ce85977f0496
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Sat Dec 14 17:45:48 2024 +0800
+
+    modify readme
+
+commit dd28ddbbb45cf16d01d3da9a4bfb35985d93e729
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Sat Dec 14 17:38:06 2024 +0800
+
+    modify figs
+
+commit dcb1e48ddc3fdf0ffb6fc27ddbbd0fa990a4591e
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Dec 14 16:46:30 2024 +0800
+
+    Update README.md
+
+commit 364fcaba93e673175eb794625c086e34bf310253
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Sat Dec 14 16:46:12 2024 +0800
+
+    Update README.md
+
+commit a0f5b1106e0ffbc090dbe7cccec6419990f0956e
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 12 19:08:21 2024 +0800
+
+    Update README.md
+
+commit 0722eef3dd14657dbb03110a08c6cac937437ec5
+Author: Xiangfei Qiu <82441982+qiu69@users.noreply.github.com>
+Date:   Thu Dec 12 19:05:29 2024 +0800
+
+    Update README.md
+
+commit b582f2d948f4f221d7713a13746e81ff7c89e050
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Thu Dec 12 18:59:15 2024 +0800
+
+    modify sh
+
+commit 067a038569b7f0d209185892451f10455a352072
+Author: qiu69 <qiuxiangfei69@163.com>
+Date:   Mon Dec 2 20:38:29 2024 +0800
+
+    first commit

@@ -1,10 +1,43 @@
-Things that we added 
-- filepair.py to view the per channel mse table , change the file path accordingly
-- we have added methods to skip channels by modifying the code in duet.py , rolling_forecast
-- we have extracted the probability matrix , after the gumbel softmax.
+Code Additions & Modifications
+******************************
+- channelwise_mse_generator.py: Added for visualizing the per-channel MSE table. (Run only after running the .sh files once)
 
+- Ensure to update the file paths and channel names in this script according to your dataset.
+
+- Channel Skipping Logic:
+
+    Modified duet.py and rolling_forecast.py to include functionality for skipping (masking) specific channels during inference.
+
+    This enables dynamic evaluation of channel-wise contribution without retraining.
+
+-Probability Matrix Extraction:
+
+    Implemented code to extract the channel mask matrix (probability matrix) after applying the Gumbel Softmax in the model.
+
+    This matrix captures inter-channel dependencies learned by the network.
+
+Execution Instructions
+**********************
+-Run a .sh script to execute the forecasting pipeline.
+
+-This will generate:
+
+    The probability matrix (as .npy file)
+
+    The actual and predicted values for the test set (as .npy files)
+
+    The scaling values used during inference
+
+-After inference is complete, execute channelwise_mse_generator.py to:
+
+    Compute and visualize the per-channel MSE change table.
+
+Note: The channel names are hardcoded in channelwise_mse_generator.py.
+
+Run the model once to log the actual channel names and update them in channelwise_mse_generator.py accordingly before visualization.
 
 Orginal contents of Readme
+**************************
 
 # <img src="figures/duet.png" alt="Image description" style="width:40px;height:30px;"> DUET: Dual Clustering Enhanced Multivariate Time Series Forecasting
 

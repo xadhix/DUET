@@ -33,11 +33,11 @@
             "deterministic": "full",
             "save_true_pred": false
         }
-    }, 
+    },
 
     "report_config" : {
         "aggregate_type": "mean",
-        "report_metrics": ["mse_norm", "mae_norm", "rmse_norm", "mape_norm", "smape_norm", "wape_norm", "msmape_norm","custom_metric"],
+        "report_metrics": ["mse_norm", "mae_norm", "rmse_norm", "mape_norm", "smape_norm", "wape_norm", "msmape_norm"],
         "fill_type": "mean_value",
         "null_value_threshold": "0.3"
     }

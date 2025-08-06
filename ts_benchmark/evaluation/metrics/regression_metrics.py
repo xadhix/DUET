@@ -2,14 +2,9 @@
 
 import numpy as np
 
-__all__ = ["mae", "mse", "rmse", "mape", "smape", "mase", 'wape', 'msmape', "mae_norm", "mse_norm", "rmse_norm", "mape_norm", "smape_norm", "mase_norm", 'wape_norm', 'msmape_norm', "custom_metric"]
+__all__ = ["mae", "mse", "rmse", "mape", "smape", "mase", 'wape', 'msmape', "mae_norm", "mse_norm", "rmse_norm", "mape_norm", "smape_norm", "mase_norm", 'wape_norm', 'msmape_norm']
 
-###adding new custom function ################
-def custom_metric(actual: np.ndarray, predicted: np.ndarray, scaler: object = None, **kwargs):
-    channel_count = actual.shape[1]  ###### -1 if we are skipping just one channel
-    return (np.sum(np.square(_error_norm(actual, predicted, scaler)))/(channel_count-1))
 
-##############################################
 def _error(actual: np.ndarray, predicted: np.ndarray, **kwargs):
     """ Simple error """
     return actual - predicted
